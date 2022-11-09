@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import { Schema } from "mongoose";
 import extendSchema from "mongoose-extend-schema";
 
 const GeoSchema = new Schema({
@@ -29,5 +29,5 @@ const BaseDataEntity = extendSchema(BaseUserSchema, {
   },
   distanceFromAirport: Number,
 });
-
+BaseDataEntity.index({ coordinates: "2dsphere" })
 module.exports = { BaseUserSchema, BaseDataEntity };
