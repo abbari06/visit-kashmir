@@ -13,7 +13,6 @@ class dbService {
           };
         }
       } catch (error) {
-        console.log("error", error);
         return {
           error: true,
           statusCode: 500,
@@ -41,7 +40,44 @@ class dbService {
         };
       }
     }
-  
+
+    async update(_id, data){
+      try {
+        let item = await this.model.findByIdAndUpdate(_id, data,{ returnOriginal: false});
+          return {
+            error:false,
+            statusCode:202,
+            item
+          };
+      } catch (error) {
+        return {
+          error:true,
+          statusCode:500,
+          message:error.errmsg || "Coundn't update",
+          errors: error.errors
+        }
+      }
+    }
+
+    async delete(_id){
+      try {
+        let item = await this.model.findOne({_id:_id});
+        item.deletedFlag=true;
+        item.save();
+        return{
+          error:false,
+          statusCode:201
+        }
+      } catch (error) {
+        return{
+          error:true,
+          statusCode:500,
+          message:error.errmsg || "Coundn't delete",
+          errors: error.errors
+        }
+      
+      }
+    }
   }
   
   export default dbService;
