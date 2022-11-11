@@ -33,7 +33,7 @@ class Place {
         type: [],
       },
     });
-    PlaceShema.plugin(autoIncrement.plugin, { model: "Place", field: "_id" });
+    PlaceShema.plugin(autoIncrement.plugin, { model: "places", field: "_id" });
     PlaceShema.index({ coordinates: "2dsphere" })
     mongoose.model("places", PlaceShema);
   }
