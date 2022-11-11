@@ -29,5 +29,4 @@ const BaseDataEntity = extendSchema(BaseUserSchema, {
   },
   distanceFromAirport: Number,
 });
-BaseDataEntity.index({ coordinates: "2dsphere" })
 module.exports = { BaseUserSchema, BaseDataEntity };
