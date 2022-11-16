@@ -2,8 +2,10 @@ import AttractionController from "./controller";
 import express from "express";
 const router = new express.Router();
 
-router.post(`/attractions/add`, AttractionController.insert);
-router.patch('/attractions/update/:id', AttractionController.update);
-router.delete('/attractions/delete/:id', AttractionController.delete);
+router.post(`/attraction/add`, AttractionController.insert);
+router.patch('/attraction/update/:id', AttractionController.update);
+router.delete('/attraction/delete/:id', AttractionController.delete);
+router.get('/attraction/get/:id', AttractionController.getById);
+router.post(`/attraction/list`, AttractionController.getList)
 
 export default router;

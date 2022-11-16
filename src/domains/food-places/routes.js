@@ -2,6 +2,10 @@ import FoodPlaceController from "./controller";
 import express from "express";
 const router = new express.Router();
 
-router.post(`/foodplaces/add`, FoodPlaceController.insert);
-
+const url = '/foodplace'
+router.post(`${url}/add`, FoodPlaceController.insert);
+router.patch(`${url}/update/:id`, FoodPlaceController.update);
+router.delete(`${url}/delete/:id`, FoodPlaceController.delete)
+router.get(`${url}/get/:id`, FoodPlaceController.getById)
+router.post(`${url}/list`, FoodPlaceController.getList)
 export default router;

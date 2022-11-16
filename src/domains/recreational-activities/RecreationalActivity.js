@@ -24,7 +24,7 @@ class RecreationalActivity {
       },
       type: {
         type: String,
-        required: true,
+        enum:["outdoorActivity","indoorActivity","concentsAndShows"]
       },
       modeOfBooking: {
         type: [],

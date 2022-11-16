@@ -17,7 +17,10 @@ class FoodPlace {
             type: String,
             required: true,
           }, 
-          type:String,                                                  
+          type:{
+            type:String,
+            enum:['Non-veg','Veg','Hybrid']
+          },                                                  
           description: {
             type: String,
             required: true,
@@ -31,7 +34,8 @@ class FoodPlace {
             required: true,
           },
           closingDays:{
-            type:[]
+            type:[String],
+            enum:["saturday","sunday"]
           },
           menuLinks:[],
           famousFor:[],

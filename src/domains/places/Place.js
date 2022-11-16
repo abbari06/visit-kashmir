@@ -32,6 +32,8 @@ class Place {
       mustDo: {
         type: [],
       },
+    },{
+      timestamps:true
     });
     PlaceShema.plugin(autoIncrement.plugin, { model: "places", field: "_id" });
     PlaceShema.index({ coordinates: "2dsphere" })
