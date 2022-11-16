@@ -7,16 +7,30 @@ class EventService extends dbService {
 
   
   async getEventByPlaceName(req) {
-    const place = await PlaceController.getPlaceByName(req.params);
-    if (place) {
-      const event = await this.model.find({ placeId: place._id });
+    const places = await PlaceController.getPlaceByName(req.params);
+    const query = [];
+    if (places) {
+      for (let place of places) {
+        query.push({ placeId: place._id, deletedFlag: false });
+      }
+    }
+    try {
+      const events = await this.model.find({ $or: query });
       return {
         error: false,
-        statusCode: 201,
-        event,
+        statusCode: 202,
+        events
+      };
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 500,
+        message: error.errmsg || "Something went wrong",
+        errors: error.errors,
       };
     }
   }
-}
+  }
+
 
 export default EventService;

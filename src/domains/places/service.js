@@ -5,13 +5,12 @@ class PlaceService extends dbService {
     super(model);
   }
 
-  
   async getPlaceByName(value) {
     try {
-      const place = await this.model.findOne({ name: value.place });
-      if (!place.deletedFlag) {
-        return place
-      } 
+      const place = await this.model.find({
+        $and: [{ name: { $regex: value.place } }, { deletedFlag: false }],
+      }).select("_id");
+        return place;
     } catch (error) {
       return {
         error: true,
