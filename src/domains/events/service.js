@@ -4,8 +4,6 @@ class EventService extends dbService {
   constructor(model) {
     super(model);
   }
-
-  
   async getEventByPlaceName(req) {
     const places = await PlaceController.getPlaceByName(req.params);
     const query = [];
