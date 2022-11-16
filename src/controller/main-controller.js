@@ -14,7 +14,8 @@ class MainController{
       }
 
     async list(req, res){
-        let response = await this.service.getList();
+        console.log("list", req.body);
+        let response = await this.service.getList(req);
         if(response.error) return res.status(response.statusCode).send(response);
         return res.status(202).send(response);
     }

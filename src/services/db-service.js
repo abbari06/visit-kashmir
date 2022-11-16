@@ -22,16 +22,22 @@ class dbService {
       }
     }
   
-    async list(query){
+    async getList(query){
+      const filters=query.body.filters;
+      console.log(filters);
+     let  offset=0;
+      let limit=1;
       try{ 
-        let item = await this.model.find({});
-        if(item){
+        let items = await this.model.paginate({"name":{$regex:query.body.name}},{offset, limit});
+        // let item = await this.model.find({$and:[{filters},{"name":{$regex:"n" }},{$and: [{"end_date":{$gte: new Date(new Date(req.body.date).setHours(00, 00, 00))}},{"start_date":{$lte: new Date(new Date(req.body.date).setHours(00, 00, 00))}}, { "place_id": req.body.id }] }]});
+        if(items){
           return {
             error:false,
-            item
+            items
           };
         }
       }catch(error){
+        console.log(error);
         return {
           error:true,
           statusCode:500,
