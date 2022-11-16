@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { BaseDataEntity } from "../../base-model";
 import autoIncrement from "mongoose-auto-increment";
 import extendSchema from "mongoose-extend-schema";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 class Place {
   initSchema() {
@@ -35,6 +36,7 @@ class Place {
     },{
       timestamps:true
     });
+    PlaceShema.plugin(mongoosePaginate);
     PlaceShema.plugin(autoIncrement.plugin, { model: "places", field: "_id" });
     PlaceShema.index({ coordinates: "2dsphere" })
     mongoose.model("places", PlaceShema);
