@@ -26,26 +26,20 @@ class dbService {
 
   async list(body) {
     var limit = body.limit || 10;
-    var sort = body.sort || { updateAt: 1 };
-    var query = [{ deletedFlag: false }];
+    var page=body.page|| 0;
+    const  offset = getPagination(page,limit);
+    var query = [{ deletedFlag: true }];
 
     if (body.filter) {
       query = queryBuilder(body.filter);
     }
     console.log(query);
     try {
-      let list = await this.model
-        .find({
-          $and: query,
-        })
-        .limit(limit)
-        .sort(sort);
-      let count = list.length;
+      let list=await this.model.paginate({$and:query},{offset,limit});
       return {
         error: false,
         statusCode: 202,
         list,
-        totalElements: count,
       };
     } catch (error) {
       return {
@@ -155,6 +149,11 @@ const queryBuilder = (data) => {
   }
 
   return query;
+};
+const getPagination = (page, size) => {
+  //const limit = size ? +size : 10;
+  const offset = page ? page * size : 0;
+  return offset ;
 };
 
 export default dbService;
