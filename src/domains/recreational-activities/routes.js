@@ -8,5 +8,6 @@ router.patch(url+`/update/:id`, RecreationalActivityController.update);
 router.delete(url+`/delete/:id`, RecreationalActivityController.delete);
 router.get(url+'/get/:id', RecreationalActivityController.getById);
 router.post(url+'/list', RecreationalActivityController.getList);
+router.post(`${url}/placename/:place`, RecreationalActivityController.getByPlaceName);
 
 export default router;
