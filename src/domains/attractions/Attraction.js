@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { BaseDataEntity } from "../../base-model";
 import autoIncrement from "mongoose-auto-increment";
 import extendSchema from "mongoose-extend-schema";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 class Attraction {
     initSchema() {
@@ -44,6 +45,7 @@ class Attraction {
       {
         timestamps:true
       });
+      AttractionSchema.plugin(mongoosePaginate);
       AttractionSchema.plugin(autoIncrement.plugin, { model: "Attraction", field: "_id" });
       AttractionSchema.index({ coordinates: "2dsphere" })
       mongoose.model("Attraction", AttractionSchema);
