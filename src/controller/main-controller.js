@@ -6,6 +6,7 @@ class MainController {
     this.delete = this.delete.bind(this);
     this.getById = this.getById.bind(this);
     this.getList = this.getList.bind(this);
+    this.getByPlaceName = this.getByPlaceName.bind(this);
   }
   async insert(req, res) {
     let response = await this.service.insert(req.body);
@@ -30,6 +31,12 @@ class MainController {
     const { id } = req.params;
     let response = await this.service.delete(id);
     return res.status(response.statusCode).send(response);
+  }
+
+  async getByPlaceName(req,res){
+    let response = await this.service.getItemsByPlace(req);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
   }
 }
 

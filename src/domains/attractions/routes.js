@@ -7,6 +7,6 @@ router.patch('/attraction/update/:id', AttractionController.update);
 router.delete('/attraction/delete/:id', AttractionController.delete);
 router.get('/attraction/get/:id', AttractionController.getById);
 router.post(`/attraction/list`, AttractionController.getList);
-router.get(`/attraction/placename/:place`, AttractionController.getAttractionByPlaceName);
+router.get(`/attraction/placename/:place`, AttractionController.getByPlaceName);
 
 export default router;

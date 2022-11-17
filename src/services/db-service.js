@@ -1,9 +1,10 @@
+import PlaceController from "../domains/places/controller";
+
 class dbService {
   constructor(model) {
     this.model = model;
   }
 
-  
   async insert(data) {
     try {
       let item = await this.model.create(data);
@@ -23,19 +24,18 @@ class dbService {
     }
   }
 
-
   async list(body) {
     var limit = body.limit || 10;
-    var page=body.page|| 0;
-    const  offset = getPagination(page,limit);
-    var query = [{ deletedFlag: true }];
+    var page = body.page || 0;
+    const offset = getPagination(page, limit);
+    var query = [{ deletedFlag: false }];
 
     if (body.filter) {
       query = queryBuilder(body.filter);
     }
-    console.log(query);
     try {
-      let list=await this.model.paginate({$and:query},{offset,limit});
+      let list = await this.model.paginate({ $and: query }, { offset, limit });
+      console.log(list);
       return {
         error: false,
         statusCode: 202,
@@ -50,7 +50,6 @@ class dbService {
       };
     }
   }
-
 
   async update(_id, data) {
     try {
@@ -71,7 +70,6 @@ class dbService {
       };
     }
   }
-
 
   async getById(_id) {
     let item = await this.model.findById(_id);
@@ -98,7 +96,6 @@ class dbService {
     }
   }
 
-
   async delete(_id) {
     try {
       let item = await this.model.findOne({ _id: _id });
@@ -118,8 +115,40 @@ class dbService {
       };
     }
   }
-}
 
+  async getItemsByPlace(req) {
+    const places = await PlaceController.getPlaceByName(req.params);
+    const placeIds = [];
+    if (places) {
+      for (let place of places) {
+        placeIds.push(place._id);
+      }
+    }
+    var query = [{ deletedFlag: false }];
+
+    if (req.body.filter) {
+      query = queryBuilder(req.body.filter);
+    }
+    try {
+      const item = await this.model
+        .find({ $and: query })
+        .where("placeId")
+        .in(placeIds);
+      return {
+        error: false,
+        statusCode: 202,
+        item,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 500,
+        message: error.errmsg || "Something went wrong",
+        errors: error.errors,
+      };
+    }
+  }
+}
 
 const queryBuilder = (data) => {
   var query = [{ deletedFlag: false }];
@@ -153,7 +182,7 @@ const queryBuilder = (data) => {
 const getPagination = (page, size) => {
   //const limit = size ? +size : 10;
   const offset = page ? page * size : 0;
-  return offset ;
+  return offset;
 };
 
 export default dbService;

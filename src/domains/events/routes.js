@@ -7,6 +7,6 @@ router.patch(`/event/update/:id`, EventController.update);
 router.delete(`/event/delete/:id`, EventController.delete);
 router.get(`/event/get/:id`, EventController.getById);
 router.post(`/event/list`, EventController.getList);
-router.get(`/event/getByName/:place`, EventController.getEventByPlaceName);
+router.get(`/event/getByName/:place`, EventController.getByPlaceName);
 
 export default router;
