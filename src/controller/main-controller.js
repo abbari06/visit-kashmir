@@ -7,6 +7,7 @@ class MainController {
     this.getById = this.getById.bind(this);
     this.getList = this.getList.bind(this);
     this.getByPlaceName = this.getByPlaceName.bind(this);
+    this.getNearPlaces=this.getNearPlaces.bind(this);
   }
   async insert(req, res) {
     let response = await this.service.insert(req.body);
@@ -36,6 +37,13 @@ class MainController {
   async getByPlaceName(req,res){
     let response = await this.service.getItemsByPlace(req);
     if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
+  }
+  async getNearPlaces(req,res){
+    let response=await this.service.nearMe(req.body);
+    if(response.error){
+      return res.status(response.statusCode).send(response);
+    }
     return res.status(201).send(response);
   }
 }

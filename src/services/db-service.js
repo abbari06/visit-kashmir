@@ -35,7 +35,6 @@ class dbService {
     }
     try {
       let list = await this.model.paginate({ $and: query }, { offset, limit });
-      console.log(list);
       return {
         error: false,
         statusCode: 202,
@@ -138,6 +137,33 @@ class dbService {
         error: false,
         statusCode: 202,
         item,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 500,
+        message: error.errmsg || "Something went wrong",
+        errors: error.errors,
+      };
+    }
+  }
+  async nearMe(body) {
+    try {
+      const places = await this.model.find({
+        coordinates: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [body.lng,body.lat],
+            },
+            $maxDistance: 40000,
+          },
+        },
+      });
+      return {
+        error: false,
+        statusCode: 202,
+        places,
       };
     } catch (error) {
       return {
