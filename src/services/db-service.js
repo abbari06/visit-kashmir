@@ -180,7 +180,6 @@ const queryBuilder = (data) => {
   return query;
 };
 const getPagination = (page, size) => {
-  //const limit = size ? +size : 10;
   const offset = page ? page * size : 0;
   return offset;
 };

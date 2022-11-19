@@ -7,8 +7,8 @@ class UserService extends dbService{
 
     async saveUserOnboardingData(data){
         try {
-            const item = await this.model.create(data);
-            if(item){
+            const wizardData = await this.model.create(data);
+            if(wizardData){
                 return {
                     error: false,
                     statusCode: 201,

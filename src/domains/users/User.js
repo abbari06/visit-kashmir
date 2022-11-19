@@ -21,6 +21,7 @@ class User {
         adults: {
           type: Number,
         },
+        
         childrens: {
           type: Number,
         },
