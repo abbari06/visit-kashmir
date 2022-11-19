@@ -1,8 +1,9 @@
 import PlaceController from "../domains/places/controller";
-
+import AttractionController from "../domains/attractions/controller";
 class dbService {
   constructor(model) {
     this.model = model;
+
   }
 
   async insert(data) {
