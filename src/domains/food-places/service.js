@@ -1,4 +1,4 @@
-import dbService from '../../services/db-service';
+const dbService = require("../../services/db-service");
 
 class FoodPlaceService extends dbService{
     constructor(model){
@@ -6,4 +6,4 @@ class FoodPlaceService extends dbService{
     }
 };
 
-export default FoodPlaceService;
+module.exports = FoodPlaceService;

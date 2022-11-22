@@ -1,5 +1,5 @@
-import RecreationalActivityController from "./controller";
-import express from "express";
+const RecreationalActivityController = require("./controller");
+const express = require("express");
 const router = new express.Router();
 
 const url = '/recreational-activity';
@@ -10,4 +10,4 @@ router.get(url+'/get/:id', RecreationalActivityController.getById);
 router.post(url+'/list', RecreationalActivityController.getList);
 router.post(`${url}/placename/:place`, RecreationalActivityController.getByPlaceName);
 
-export default router;
+module.exports = router;

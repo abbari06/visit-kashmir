@@ -1,6 +1,6 @@
-import MainController from "./../../controller/main-controller";
-import EventService from "./service";
-import Event from "./Event";
+const MainController = require("../../controller/main-controller");
+const EventService = require("./service");
+const Event = require("./Event");
 const service = new EventService(new Event().getInstance());
 
 class EventController extends MainController {
@@ -10,4 +10,4 @@ class EventController extends MainController {
 
 }
 
-export default new EventController(service);
+module.exports = new EventController(service);

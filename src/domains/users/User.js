@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import { BaseUserSchema } from "../../base-model";
-import autoIncrement from "mongoose-auto-increment";
-import extendSchema from "mongoose-extend-schema";
+const mongoose = require("mongoose");
+const {BaseUserSchema} = require("../../base-model");
+const autoIncrement = require("mongoose-auto-increment");
+const extendSchema = require("mongoose-extend-schema");
 
 class User {
   initSchema() {
@@ -54,4 +54,4 @@ class User {
   }
 }
 
-export default User;
+module.exports = User;

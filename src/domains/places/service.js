@@ -1,5 +1,4 @@
-import dbService from "../../services/db-service";
-
+const dbService = require("../../services/db-service");
 class PlaceService extends dbService {
   constructor(model) {
     super(model);
@@ -21,4 +20,4 @@ class PlaceService extends dbService {
   }
 }
 
-export default PlaceService;
+module.exports = PlaceService;

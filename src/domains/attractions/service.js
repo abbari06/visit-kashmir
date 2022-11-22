@@ -1,15 +1,17 @@
-import dbService from "../../services/db-service";
+const dbService = require("../../services/db-service");
 
 class AttractionService extends dbService {
   constructor(model) {
     super(model);
   }
-  async getAttractionIdsByAttractionName(data){
+  async getAttractionIdsByAttractionName(data) {
     try {
-      const attractions = await this.model.find({
-        $and: [{ name: { $regex: data.attraction } }, { deletedFlag: false }],
-      }).select("_id");
-        return attractions;
+      const attractions = await this.model
+        .find({
+          $and: [{ name: { $regex: data.attraction } }, { deletedFlag: false }],
+        })
+        .select("_id");
+      return attractions;
     } catch (error) {
       return {
         error: true,
@@ -17,7 +19,7 @@ class AttractionService extends dbService {
         message: "Not found",
       };
     }
-}
+  }
 }
 
-export default AttractionService;
+module.exports = AttractionService;

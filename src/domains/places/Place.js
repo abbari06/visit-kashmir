@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import { BaseDataEntity } from "../../base-model";
-import autoIncrement from "mongoose-auto-increment";
-import extendSchema from "mongoose-extend-schema";
-import mongoosePaginate from "mongoose-paginate-v2";
+const mongoose = require("mongoose");
+const {BaseDataEntity} = require("../../base-model");
+const autoIncrement = require("mongoose-auto-increment");
+const extendSchema = require("mongoose-extend-schema");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 class Place {
   initSchema() {
@@ -46,4 +46,5 @@ class Place {
     return mongoose.model("places");
   }
 }
-export default Place;
+
+module.exports = Place;

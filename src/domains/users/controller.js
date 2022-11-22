@@ -1,7 +1,6 @@
-import MainController from "../../controller/main-controller";
-import UserService from "./service";
-import User from "./User";
-
+const MainController = require("../../controller/main-controller");
+const UserService = require("./service");
+const User = require("./User");
 const service = new UserService(new User().getInstance());
 
 class UserController extends MainController {
@@ -16,4 +15,4 @@ class UserController extends MainController {
   }
 }
 
-export default new UserController(service);
+module.exports = new UserController(service);

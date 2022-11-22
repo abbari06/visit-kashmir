@@ -1,6 +1,7 @@
-import { Schema } from "mongoose";
-import extendSchema from "mongoose-extend-schema";
-
+// import { Schema } from "mongoose";
+// import extendSchema from "mongoose-extend-schema";
+const {Schema} = require("mongoose");
+const extendSchema = require("mongoose-extend-schema");
 const GeoSchema = new Schema({
   type: {
     enum: ["Point"],

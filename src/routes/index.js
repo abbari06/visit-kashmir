@@ -1,15 +1,18 @@
-import  Express  from "express";
+const Express = require("express");
 const router = Express.Router();
-import PlaceRouter from "../domains/places/routes";
-import AttractionRouter from "../domains/attractions/routes";
-import RecreationalActivityRouter from "../domains/recreational-activities/routes";
-import EventRouter from "../domains/events/routes"
-import FoodPlaceRouter from "../domains/food-places/routes";
-import UserRouter from "../domains/users/routes"
+
+const PlaceRouter = require("../domains/places/routes");
+const AttractionRouter = require("../domains/attractions/routes");
+const RecreationalActivityRouter = require("../domains/recreational-activities/routes");
+const EventRouter = require("../domains/events/routes");
+const UserRouter = require("../domains/users/routes");
+const FoodPlaceRouter = require("../domains/food-places/routes");
+
 router.use(PlaceRouter);
 router.use(AttractionRouter);
 router.use(RecreationalActivityRouter);
 router.use(EventRouter);
 router.use(FoodPlaceRouter);
 router.use(UserRouter);
-export default router;
+
+module.exports = router;

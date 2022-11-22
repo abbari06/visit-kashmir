@@ -1,6 +1,6 @@
-import MainController from "../../controller/main-controller";
-import PlaceService from "./service";
-import Place from "./Place";
+const MainController = require("../../controller/main-controller");
+const PlaceService = require("./service");
+const Place = require("./Place");
 
 const service = new PlaceService(new Place().getInstance());
 
@@ -19,4 +19,4 @@ class PlaceController extends MainController {
   }
 }
 
-export default new PlaceController(service);
+module.exports = new PlaceController(service);

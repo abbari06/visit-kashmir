@@ -1,8 +1,10 @@
-import PlaceController from "../domains/places/controller";
+const PlaceController = require("../domains/places/controller");
+const autoBind = require("auto-bind");
+
 class dbService {
   constructor(model) {
     this.model = model;
-
+    autoBind(this);
   }
 
   async insert(data) {
@@ -147,6 +149,39 @@ class dbService {
       };
     }
   }
+  async getItemsByAttraction(req) {
+    // const places = await PlaceController.getPlaceByName(req.params);
+    // const attraction = AttractionService.getAttractionIdsByAttractionName(req.params);
+    // const attractions = AttractionController.get();
+    // const placeIds = [];
+    // if (attractions) {
+    //   for (let place of attractions) {
+    //     placeIds.push(place._id);
+    //   }
+    // }
+    // var query = [{ deletedFlag: false }];
+    // if (req.body.filter) {
+    //   query = queryBuilder(req.body.filter);
+    // }
+    // try {
+    //   const item = await this.model
+    //     .find({ $and: query })
+    //     .where("placeId")
+    //     .in(placeIds);
+    //   return {
+    //     error: false,
+    //     statusCode: 202,
+    //     item,
+    //   };
+    // } catch (error) {
+    //   return {
+    //     error: true,
+    //     statusCode: 500,
+    //     message: error.errmsg || "Something went wrong",
+    //     errors: error.errors,
+    //   };
+    // }
+  }
   async nearMe(body) {
     try {
       const places = await this.model.find({
@@ -154,7 +189,7 @@ class dbService {
           $near: {
             $geometry: {
               type: "Point",
-              coordinates: [body.lng,body.lat],
+              coordinates: [body.lng, body.lat],
             },
             $maxDistance: 40000,
           },
@@ -210,4 +245,4 @@ const getPagination = (page, size) => {
   return offset;
 };
 
-export default dbService;
+module.exports = dbService;

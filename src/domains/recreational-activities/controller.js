@@ -1,6 +1,6 @@
-import MainController from "../../controller/main-controller";
-import RecreationActivityService from "./service";
-import RecreationalActivity from "./RecreationalActivity";
+const MainController = require("../../controller/main-controller");
+const RecreationActivityService = require("./service");
+const RecreationalActivity = require("./RecreationalActivity");
 
 const service = new RecreationActivityService(new RecreationalActivity().getInstance());
 
@@ -10,4 +10,4 @@ class RecreationalActivityController extends MainController {
   }
 }
 
-export default new RecreationalActivityController(service);
+module.exports = new RecreationalActivityController(service);

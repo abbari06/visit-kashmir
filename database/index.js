@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import autoIncrement from "mongoose-auto-increment";
+const mongoose = require("mongoose");
+const autoIncrement = require("mongoose-auto-increment");
 
 class Connection {
   constructor() {
@@ -10,4 +10,4 @@ class Connection {
   }
 }
 
-export default new Connection();
+module.exports = new Connection();

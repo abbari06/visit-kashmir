@@ -1,4 +1,4 @@
-import app from "./server";
+const app = require("./server");
 const port=process.env.Port || 3000;
 const startServer=()=>{
     app.listen(port,()=>{

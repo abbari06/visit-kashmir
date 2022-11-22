@@ -1,13 +1,10 @@
+const autoBind = require('auto-bind');
+
 class MainController {
   constructor(service) {
     this.service = service;
-    this.insert = this.insert.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
-    this.getById = this.getById.bind(this);
-    this.getList = this.getList.bind(this);
-    this.getByPlaceName = this.getByPlaceName.bind(this);
-    this.getNearPlaces=this.getNearPlaces.bind(this);
+    autoBind(this);
+
   }
   async insert(req, res) {
     let response = await this.service.insert(req.body);
@@ -46,6 +43,13 @@ class MainController {
     }
     return res.status(201).send(response);
   }
+
+  async getByAttraction(req,res){
+    let response = await this.service.getItemsByAttraction(req);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
+  }
 }
 
-export default MainController;
+// export default MainController;
+module.exports = MainController;

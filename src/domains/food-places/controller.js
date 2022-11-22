@@ -1,6 +1,6 @@
-import MainController from "../../controller/main-controller";
-import FoodPlaceService from "./service";
-import FoodPlace from "./FoodPlace";
+const MainController = require("../../controller/main-controller");
+const FoodPlaceService = require("./service");
+const FoodPlace = require("./FoodPlace");
 
 const service = new FoodPlaceService(new FoodPlace().getInstance());
 
@@ -10,4 +10,4 @@ class FoodPlaceController extends MainController {
   }
 }
 
-export default new FoodPlaceController(service);
+module.exports = new FoodPlaceController(service);
