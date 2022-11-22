@@ -4,5 +4,4 @@ class EventService extends dbService {
     super(model);
   }
 }
-
 module.exports = EventService;

@@ -1,8 +1,10 @@
 const dbService = require("../../services/db-service");
+const autoBind = require("auto-bind");
 
 class AttractionService extends dbService {
   constructor(model) {
     super(model);
+    autoBind(this);
   }
   async getAttractionIdsByAttractionName(data) {
     try {

@@ -149,38 +149,35 @@ class dbService {
       };
     }
   }
-  async getItemsByAttraction(req) {
-    // const places = await PlaceController.getPlaceByName(req.params);
-    // const attraction = AttractionService.getAttractionIdsByAttractionName(req.params);
-    // const attractions = AttractionController.get();
-    // const placeIds = [];
-    // if (attractions) {
-    //   for (let place of attractions) {
-    //     placeIds.push(place._id);
-    //   }
-    // }
-    // var query = [{ deletedFlag: false }];
-    // if (req.body.filter) {
-    //   query = queryBuilder(req.body.filter);
-    // }
-    // try {
-    //   const item = await this.model
-    //     .find({ $and: query })
-    //     .where("placeId")
-    //     .in(placeIds);
-    //   return {
-    //     error: false,
-    //     statusCode: 202,
-    //     item,
-    //   };
-    // } catch (error) {
-    //   return {
-    //     error: true,
-    //     statusCode: 500,
-    //     message: error.errmsg || "Something went wrong",
-    //     errors: error.errors,
-    //   };
-    // }
+  async getItemsByAttraction(ids,req) {
+    const attractionIds = [];
+    if (ids) {
+      for (let id of ids) {
+        attractionIds.push(id._id);
+      }
+    }
+    var query = [{ deletedFlag: false }];
+    if (req.body.filter) {
+      query = queryBuilder(req.body.filter);
+    }
+    try {
+      const item = await this.model
+        .find({ $and: query })
+        .where("attractionId")
+        .in(attractionIds);
+      return {
+        error: false,
+        statusCode: 202,
+        item,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 500,
+        message: error.errmsg || "Something went wrong",
+        errors: error.errors,
+      };
+    }
   }
   async nearMe(body) {
     try {
