@@ -49,6 +49,12 @@ class MainController {
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
+
+  async getRecommendation(id, query){
+    let result = await this.service.recommendation(id, query);
+    console.log(result);
+    return result
+  }
 }
 
 // export default MainController;

@@ -3,12 +3,12 @@ const {BaseUserSchema} = require("../../base-model");
 const autoIncrement = require("mongoose-auto-increment");
 const extendSchema = require("mongoose-extend-schema");
 
-class User {
+class Recommendation {
   initSchema() {
-    const UserSchema = extendSchema(
+    const RecommendationSchema = extendSchema(
       BaseUserSchema,
       {
-        userBooked: {
+        RecommendationBooked: {
           type: Boolean,
         },
         travelBy: {
@@ -43,15 +43,15 @@ class User {
         timestamps: true,
       }
     );
-    UserSchema.plugin(autoIncrement.plugin, { model: "users", field: "_id" });
-    UserSchema.index({ coordinates: "2dsphere" });
-    mongoose.model("users", UserSchema);
+    RecommendationSchema.plugin(autoIncrement.plugin, { model: "Recommendations", field: "_id" });
+    RecommendationSchema.index({ coordinates: "2dsphere" });
+    mongoose.model("Recommendations", RecommendationSchema);
   }
 
   getInstance() {
     this.initSchema();
-    return mongoose.model("users");
+    return mongoose.model("Recommendations");
   }
 }
 
-module.exports = User;
+module.exports = Recommendation;

@@ -39,7 +39,7 @@ class FoodPlace {
             enum:["saturday","sunday"]
           },
           menuLinks:[],
-          famousFor:[],
+          knownFor:[],
           seniorCetizenCompatibility:{
             type:Boolean
           },

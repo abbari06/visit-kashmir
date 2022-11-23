@@ -206,11 +206,31 @@ class dbService {
       };
     }
   }
+
+  async recommendation(id, queryy){
+    const query = queryBuilder(queryy,id);
+    console.log(query);
+    try {
+      const item = await this.model
+        .find({ $and: query })
+        // .where("placeId")
+        // .in(id);
+      return {
+        item
+      };
+    } catch (error) {
+      return {
+        message: error.errmsg || "Something went wrong",
+      };
+    }
+  }
 }
 
-const queryBuilder = (data) => {
+const queryBuilder = (data,id) => {
   var query = [{ deletedFlag: false }];
-
+  query.push({
+    placeId: id
+  });
   for (const [key, value] of Object.entries(data)) {
     if (key == "famousFor") {
       query.push({
@@ -228,11 +248,16 @@ const queryBuilder = (data) => {
       query.push({
         [key]: { $regex: value },
       });
-    } else {
+    } else if(key == "interests"){
       query.push({
-        [key]: value,
-      });
-    }
+        knownFor:{$in: value}
+      })
+    } 
+    // else {
+    //   query.push({
+    //     [key]: value,
+    //   });
+    // }
   }
 
   return query;

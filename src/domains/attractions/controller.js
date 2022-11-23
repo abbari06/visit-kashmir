@@ -14,6 +14,7 @@ class AttractionController extends MainController {
     const ids = await service.getAttractionIdsByAttractionName(data);
     return ids
   }
+
 }
 
 module.exports = new AttractionController(service);
