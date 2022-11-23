@@ -13,29 +13,38 @@ class RecommendationService extends dbService {
     const slot = 1;
     const currentSlot = parseInt(body.itineraryForm[0].checkIn) + slot;
     const totalSlots = kmrLastSlotTime - currentSlot;
-    const placeId = body.itineraryForm[0].action;
     const recommendation = [];
     const query = body.query;
     if (totalSlots) {
-      const attractions = await AttractionController.getRecommendation(
-        placeId,
-        query
-      );
-      const foodplaces = await FoodPlaceController.getRecommendation(placeId, query);
-      const events = await EventController.getRecommendation(
-        placeId,
-        query
-      );
-      const recreationalActivities =  await RecreationalActivityController.getRecommendation(placeId, query);
-      recommendation.push({day:1,attractions,foodplaces,events,recreationalActivities});
+      try {
+        for(let i of body.itineraryForm){
+          const placeId = i.action;
+          const attractions = await AttractionController.getRecommendation(
+            placeId,
+            query
+          );
+          const foodplaces = await FoodPlaceController.getRecommendation(placeId, query);
+          const events = await EventController.getRecommendation(
+            placeId,
+            query
+          );
+          const recreationalActivities =  await RecreationalActivityController.getRecommendation(placeId, query);
+          recommendation.push({day:i.day,attractions,foodplaces,events,recreationalActivities});
+          }
+          return {
+            error: false,
+            statusCode: 202,
+            recommendation
+          };
+      } catch (error) {
+        return {
+          error: true,
+          statusCode: 500,
+          message: error.errmsg || "Something went wrong",
+          errors: error.errors,
+        };
     }
-    // console.log(body.itineraryForm[0].checkIn);
-    //   for(let day of body.itineraryForm){
-    //     if(day.trigger === "arrival"){
-    //         let currentSlot = parseInt(day.checkIn) + slot;
-
-    //     }
-    //}
+}
   }
 }
 

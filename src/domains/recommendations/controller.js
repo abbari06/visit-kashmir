@@ -10,9 +10,8 @@ class RecommendationController extends MainController {
   }
   async RecommendationOnboarding(req,res) {
     const response = await this.service.recommendationOnboardingData(req.body);
-    return res.status(200).send(response)
-    // if(response.error) return res.status(response.statusCode).send(response);
-    // return res.status(202).send(response);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
   }
 }
 

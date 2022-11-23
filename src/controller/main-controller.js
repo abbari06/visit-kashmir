@@ -52,7 +52,6 @@ class MainController {
 
   async getRecommendation(id, query){
     let result = await this.service.recommendation(id, query);
-    console.log(result);
     return result
   }
 }
