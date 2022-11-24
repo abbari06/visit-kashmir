@@ -15,27 +15,42 @@ class RecommendationService extends dbService {
     const totalSlots = kmrLastSlotTime - currentSlot;
     const recommendation = [];
     const query = body.query;
+    query.startSlotTime = currentSlot.toString();
+    console.log(query);
     if (totalSlots) {
       try {
-        for(let i of body.itineraryForm){
+        for (let i of body.itineraryForm) {
           const placeId = i.action;
           const attractions = await AttractionController.getRecommendation(
             placeId,
             query
           );
-          const foodplaces = await FoodPlaceController.getRecommendation(placeId, query);
+          const foodplaces = await FoodPlaceController.getRecommendation(
+            placeId,
+            query
+          );
           const events = await EventController.getRecommendation(
             placeId,
             query
           );
-          const recreationalActivities =  await RecreationalActivityController.getRecommendation(placeId, query);
-          recommendation.push({day:i.day,attractions,foodplaces,events,recreationalActivities});
-          }
-          return {
-            error: false,
-            statusCode: 202,
-            recommendation
-          };
+          const recreationalActivities =
+            await RecreationalActivityController.getRecommendation(
+              placeId,
+              query
+            );
+          recommendation.push({
+            day: i.day,
+            attractions,
+            foodplaces,
+            events,
+            recreationalActivities,
+          });
+        }
+        return {
+          error: false,
+          statusCode: 202,
+          recommendation,
+        };
       } catch (error) {
         return {
           error: true,
@@ -43,8 +58,8 @@ class RecommendationService extends dbService {
           message: error.errmsg || "Something went wrong",
           errors: error.errors,
         };
+      }
     }
-}
   }
 }
 

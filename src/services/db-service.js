@@ -209,6 +209,7 @@ class dbService {
 
   async recommendation(id, queryy){
     const query = queryBuilder(queryy,id);
+    console.log(query);
     try {
       const item = await this.model
         .find({ $and: query })
@@ -250,6 +251,21 @@ const queryBuilder = (data,id) => {
         knownFor:{$in: value}
       })
     } 
+    else if(key=="arrivalDate"){
+      query.push({
+        endDate:{$gte:new Date(value)}
+      })
+    }
+    else if(key=="departureDate"){
+      query.push({
+        startDate:{$lte:new Date(value)}
+      })
+    }
+    else if(key=="startSlotTime"){
+      query.push({
+        endingHrs:{$gte:value}
+      })
+    }
     // else {
     //   query.push({
     //     [key]: value,
