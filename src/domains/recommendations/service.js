@@ -11,16 +11,32 @@ class RecommendationService extends dbService {
   async recommendationOnboardingData(body) {
     const kmrLastSlotTime = 23;
     const slot = 1;
-    const currentSlot = parseInt(body.itineraryForm[0].checkIn) + slot;
-    const totalSlots = kmrLastSlotTime - currentSlot;
-    const recommendation = [];
+    var startSlot; 
+    var endSlot;
+    //= parseInt(body.itineraryForm[0].checkIn) + slot;
+    //const totalSlots = kmrLastSlotTime - currentSlot;
+    var placeId;
+    var stayPlaceId=-1;
+    const visitRecommendation = [];
+    const stayRecommendation = [];
     const query = body.query;
-    query.startSlotTime = currentSlot.toString();
     console.log(query);
-    if (totalSlots) {
-      try {
-        for (let i of body.itineraryForm) {
-          const placeId = i.action;
+    try {
+      for (let i of body.itineraryForm){
+        if(i.stay){
+           placeId=i.action;
+           stayPlaceId=placeId;
+          if(i.trigger=="arrival"){
+            startSlot=parseInt(i.arrivalTime)+(3*slot);
+            query.startSlotTime = startSlot.toString();
+            console.log(startSlot , "slottime");
+            endSlot=kmrLastSlotTime;
+          }
+          if(i.trigger=="visit"){
+            startSlot=9;
+            endSlot=kmrLastSlotTime;
+          }
+          query.startSlotTime = startSlot.toString();
           const attractions = await AttractionController.getRecommendation(
             placeId,
             query
@@ -38,7 +54,7 @@ class RecommendationService extends dbService {
               placeId,
               query
             );
-          recommendation.push({
+          stayRecommendation.push({
             day: i.day,
             attractions,
             foodplaces,
@@ -46,19 +62,85 @@ class RecommendationService extends dbService {
             recreationalActivities,
           });
         }
-        return {
-          error: false,
-          statusCode: 202,
-          recommendation,
-        };
-      } catch (error) {
-        return {
-          error: true,
-          statusCode: 500,
-          message: error.errmsg || "Something went wrong",
-          errors: error.errors,
-        };
+        if(!i.stay){
+          placeId=i.action;
+          if(i.trigger=="arrival"){
+            startSlot=(i.arrivalTime)+(2*slot);
+            endSlot=17;
+          }
+          if(i.trigger=="visit"){
+            startSlot=9;
+            endSlot=17;
+          }
+          query.startSlotTime = startSlot.toString();
+          const attractions = await AttractionController.getRecommendation(
+            placeId,
+            query
+          );
+          const foodplaces = await FoodPlaceController.getRecommendation(
+            placeId,
+            query
+          );
+          const events = await EventController.getRecommendation(
+            placeId,
+            query
+          );
+          const recreationalActivities =
+            await RecreationalActivityController.getRecommendation(
+              placeId,
+              query
+            );
+          visitRecommendation.push({
+            day: i.day,
+            attractions,
+            foodplaces,
+            events,
+            recreationalActivities,
+          });
+          if(stayPlaceId>-1){
+            startSlot=19;
+            console.log("stayyy");
+            query.startSlotTime = startSlot.toString();
+            const attractions = await AttractionController.getRecommendation(
+              stayPlaceId,
+              query
+            );
+            const foodplaces = await FoodPlaceController.getRecommendation(
+              stayPlaceId,
+              query
+            );
+            const events = await EventController.getRecommendation(
+              stayPlaceId,
+              query
+            );
+            const recreationalActivities =
+              await RecreationalActivityController.getRecommendation(
+                stayPlaceId,
+                query
+              );
+            stayRecommendation.push({
+              day: i.day,
+              attractions,
+              foodplaces,
+              events,
+              recreationalActivities,
+            });
+          }
+        }
       }
+      return {
+        error: false,
+        statusCode: 202,
+        visitRecommendation,
+        stayRecommendation
+      };
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 500,
+        message: error.errmsg || "Something went wrong",
+        errors: error.errors,
+      };
     }
   }
 }
