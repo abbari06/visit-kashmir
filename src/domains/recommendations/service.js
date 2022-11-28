@@ -147,5 +147,4 @@ class RecommendationService extends dbService {
   }
 }
 getProperty = (pty) => {return prop.get(pty);}
-
 module.exports = RecommendationService;

@@ -247,7 +247,7 @@ const queryBuilder = (data,id) => {
       });
     } else if(key == "interests"){
       query.push({
-        knownFor:{$in: value}
+        category:{$in: value}
       })
     } 
     else if(key=="arrivalDate"){
@@ -265,11 +265,11 @@ const queryBuilder = (data,id) => {
         endingHrs:{$gte:value}
       })
     }
-    // else {
-    //   query.push({
-    //     [key]: value,
-    //   });
-    // }
+    else {
+      query.push({
+        [key]: value,
+      });
+    }
   }
 
   return query;
