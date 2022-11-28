@@ -9,34 +9,32 @@ class RecommendationService extends dbService {
   constructor(model) {
     super(model);
   }
-
   async recommendationOnboardingData(body) {
-    const kmrLastSlotTime = 23;
-    const slot = 1;
-    var startSlot; 
-    var endSlot;
-    //= parseInt(body.itineraryForm[0].checkIn) + slot;
-    //const totalSlots = kmrLastSlotTime - currentSlot;
     var placeId;
     var stayPlaceId=-1;
     const visitRecommendation = [];
     const stayRecommendation = [];
     const query = body.query;
-    console.log(query);
+    var startSlot;
+    var endSlot;
+    const hotelCheckInTime=getProperty("HOTEL_CHECKIN");
+    const arrivalToHotelTime=getProperty("HOTEL_CHECKIN");
+    const dayEndTime=getProperty("DAYEND_KMR");
+    const visitStartSLot=getProperty("VISIT_START_SLOT");
+    const visitEndSlot=getProperty("VISIT_END_SLOT");
     try {
       for (let i of body.itineraryForm){
         if(i.stay){
            placeId=i.action;
            stayPlaceId=placeId;
           if(i.trigger=="arrival"){
-            startSlot=parseInt(i.arrivalTime)+(3*slot);
+            startSlot=parseInt(i.arrivalTime)+hotelCheckInTime+arrivalToHotelTime;
             query.startSlotTime = startSlot.toString();
-            console.log(startSlot , "slottime");
-            endSlot=kmrLastSlotTime;
+            endSlot=dayEndTime;
           }
           if(i.trigger=="visit"){
-            startSlot=9;
-            endSlot=kmrLastSlotTime;
+            startSlot=visitStartSLot;
+            endSlot=dayEndTime;
           }
           query.startSlotTime = startSlot.toString();
           const attractions = await AttractionController.getRecommendation(
@@ -67,12 +65,12 @@ class RecommendationService extends dbService {
         if(!i.stay){
           placeId=i.action;
           if(i.trigger=="arrival"){
-            startSlot=(i.arrivalTime)+(2*slot);
-            endSlot=17;
+            startSlot=parseInt(i.arrivalTime)+arrivalToHotelTime;
+            endSlot=visitEndSlot;
           }
           if(i.trigger=="visit"){
-            startSlot=9;
-            endSlot=17;
+            startSlot=visitStartSLot;
+            endSlot=visitEndSlot;
           }
           query.startSlotTime = startSlot.toString();
           const attractions = await AttractionController.getRecommendation(
@@ -100,8 +98,7 @@ class RecommendationService extends dbService {
             recreationalActivities,
           });
           if(stayPlaceId>-1){
-            startSlot=19;
-            console.log("stayyy");
+            startSlot=visitEndSlot+arrivalToHotelTime;
             query.startSlotTime = startSlot.toString();
             const attractions = await AttractionController.getRecommendation(
               stayPlaceId,
@@ -137,6 +134,7 @@ class RecommendationService extends dbService {
         stayRecommendation
       };
     } catch (error) {
+      console.log(error);
       return {
         error: true,
         statusCode: 500,
