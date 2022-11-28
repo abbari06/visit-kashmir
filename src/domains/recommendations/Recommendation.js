@@ -11,6 +11,10 @@ class Recommendation {
         RecommendationBooked: {
           type: Boolean,
         },
+        caterory:{
+type:[String],
+enum:["foodplace","place"]
+        },
         travelBy: {
           type: String,
         },

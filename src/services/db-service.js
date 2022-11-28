@@ -209,7 +209,6 @@ class dbService {
 
   async recommendation(id, queryy){
     const query = queryBuilder(queryy,id);
-    console.log(query);
     try {
       const item = await this.model
         .find({ $and: query })

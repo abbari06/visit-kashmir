@@ -3,6 +3,8 @@ const AttractionController = require("../attractions/controller");
 const EventController = require("../events/controller");
 const FoodPlaceController = require("../food-places/controller");
 const RecreationalActivityController = require("../recreational-activities/controller");
+const PropertiesReader = require('properties-reader');
+const prop = PropertiesReader("app.properties");
 class RecommendationService extends dbService {
   constructor(model) {
     super(model);
@@ -144,5 +146,6 @@ class RecommendationService extends dbService {
     }
   }
 }
+getProperty = (pty) => {return prop.get(pty);}
 
 module.exports = RecommendationService;
