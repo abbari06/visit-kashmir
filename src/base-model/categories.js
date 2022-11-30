@@ -1,6 +1,7 @@
 const categories = [
-    'WaterBodies','Valleys','Gardens','Landmarks','ScenicDrives','AncientRuins','ReligiousSites',
-    'Nature','Wildlife Areas','Markets','HistoricSites','Museums','Parks','Nighlife','Wellness','Shopping','FoodPlaces'
+    'Water Bodies','Valleys','Gardens','Landmarks','Scenic Drives','Ancient Ruins','Religious Sites',
+    'Nature','Wildlife Areas','Markets','Historic Sites','Museums','Parks','Nighlife','Wellness','Shopping','FoodPlaces','waterfall',
+    "sports","activities"
 ];
 
 module.exports = categories;

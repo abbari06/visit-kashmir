@@ -14,8 +14,7 @@ class RecreationalActivity {
           required: true,
         },
         attractionId: {
-          type: Number,
-          required: true,
+          type: Number
         },
         name: {
           type: String,
