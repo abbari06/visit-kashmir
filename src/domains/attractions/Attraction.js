@@ -46,6 +46,9 @@ class Attraction {
           modeOfBooking: {
             type: []
           },
+          thingsToDo:{
+            type:[]
+          }
       },
       {
         timestamps:true
