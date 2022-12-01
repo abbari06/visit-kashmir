@@ -209,6 +209,7 @@ class dbService {
 
   async recommendation(id, queryy){
     const query = queryBuilder(queryy,id);
+    console.log(query);
     try {
       const item = await this.model
         .find({ $and: query })
@@ -224,16 +225,30 @@ class dbService {
 }
 
 const queryBuilder = (data,id) => {
-  var query = [{ deletedFlag: false }];
+ // query = [{ deletedFlag: false }];
+   var query=[  {coordinates: {
+    $near: {
+      $geometry: {
+        type: "Point",
+        coordinates: [74.809036,
+          34.069832],
+      },
+      $maxDistance: 400000,
+    },
+  }}]
   query.push({
     placeId: id
+  });
+  query.push({
+    deletedFlag: false
   });
   for (const [key, value] of Object.entries(data)) {
     if (key == "famousFor") {
       query.push({
         [key]: { $in: value },
       });
-    } else if (key == "startingHrs") {
+    }
+    else if (key == "startingHrs") {
       query.push({
         [key]: { $gte: value },
       });
@@ -241,7 +256,8 @@ const queryBuilder = (data,id) => {
       query.push({
         [key]: { $lte: value },
       });
-    } else if (key == "name") {
+    } 
+    else if (key == "name") {
       query.push({
         [key]: { $regex: value },
       });

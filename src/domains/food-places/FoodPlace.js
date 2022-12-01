@@ -20,7 +20,7 @@ class FoodPlace {
           }, 
           type:{
             type:String,
-            enum:['Non-veg','Veg','Hybrid']
+            enum:["stall","restraunt","tea spot"]
           },                                                  
           description: {
             type: String,
