@@ -149,7 +149,7 @@ class dbService {
       };
     }
   }
-  async getItemsByAttraction(ids,req) {
+  async getItemsByAttraction(ids, req) {
     const attractionIds = [];
     if (ids) {
       for (let id of ids) {
@@ -207,15 +207,25 @@ class dbService {
     }
   }
 
-  async recommendation(id, queryy){
-    const query = queryBuilder(queryy,id);
+  async recommendation(id, queryy) {
+    const query = queryBuilder(queryy, id);
     console.log(query);
     try {
-      const item = await this.model
-        .find({ $and: query })
+      const item = await this.model.find({ $and: query });
       return {
-        item
+        item,
       };
+    } catch (error) {
+      return {
+        message: error.errmsg || "Something went wrong",
+      };
+    }
+  }
+
+  async getTopThree() {
+    try {
+      const item = await this.model.find().sort({ rating: -1 }).limit(3);
+      return { error: false, statusCode: 202, item };
     } catch (error) {
       return {
         message: error.errmsg || "Something went wrong",
@@ -224,31 +234,33 @@ class dbService {
   }
 }
 
-const queryBuilder = (data,id) => {
- // query = [{ deletedFlag: false }];
-   var query=[  {coordinates: {
-    $near: {
-      $geometry: {
-        type: "Point",
-        coordinates: [74.809036,
-          34.069832],
+const queryBuilder = (data, id) => {
+  // query = [{ deletedFlag: false }];
+  var query = [
+    {
+      coordinates: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [74.809036, 34.069832],
+          },
+          $maxDistance: 400000,
+        },
       },
-      $maxDistance: 400000,
     },
-  }}]
+  ];
   query.push({
-    placeId: id
+    placeId: id,
   });
   query.push({
-    deletedFlag: false
+    deletedFlag: false,
   });
   for (const [key, value] of Object.entries(data)) {
     if (key == "famousFor") {
       query.push({
         [key]: { $in: value },
       });
-    }
-    else if (key == "startingHrs") {
+    } else if (key == "startingHrs") {
       query.push({
         [key]: { $gte: value },
       });
@@ -256,32 +268,27 @@ const queryBuilder = (data,id) => {
       query.push({
         [key]: { $lte: value },
       });
-    } 
-    else if (key == "name") {
+    } else if (key == "name") {
       query.push({
         [key]: { $regex: value },
       });
-    } else if(key == "interests"){
+    } else if (key == "interests") {
       query.push({
-        category:{$in: value}
-      })
-    } 
-    else if(key=="arrivalDate"){
+        category: { $in: value },
+      });
+    } else if (key == "arrivalDate") {
       query.push({
-        endDate:{$gte:new Date(value)}
-      })
-    }
-    else if(key=="departureDate"){
+        endDate: { $gte: new Date(value) },
+      });
+    } else if (key == "departureDate") {
       query.push({
-        startDate:{$lte:new Date(value)}
-      })
-    }
-    else if(key=="startSlotTime"){
+        startDate: { $lte: new Date(value) },
+      });
+    } else if (key == "startSlotTime") {
       query.push({
-        endingHrs:{$gte:value}
-      })
-    }
-    else {
+        endingHrs: { $gte: value },
+      });
+    } else {
       query.push({
         [key]: value,
       });

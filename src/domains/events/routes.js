@@ -8,5 +8,6 @@ router.delete(`/event/delete/:id`, EventController.delete);
 router.get(`/event/get/:id`, EventController.getById);
 router.post(`/event/list`, EventController.getList);
 router.get(`/event/getByName/:place`, EventController.getByPlaceName);
+router.get(`/event/topthree`, EventController.getTopThreeResult);
 
 module.exports = router;

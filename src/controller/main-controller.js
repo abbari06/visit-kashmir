@@ -54,7 +54,12 @@ class MainController {
     let result = await this.service.recommendation(id, query);
     return result
   }
+
+  async getTopThreeResult(req,res){
+    let response = await this.service.getTopThree();
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
+  }
 }
 
-// export default MainController;
 module.exports = MainController;

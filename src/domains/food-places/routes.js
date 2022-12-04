@@ -9,6 +9,8 @@ router.delete(`${url}/delete/:id`, FoodPlaceController.delete)
 router.get(`${url}/get/:id`, FoodPlaceController.getById)
 router.post(`${url}/list`, FoodPlaceController.getList)
 router.post(`${url}/nearme`, FoodPlaceController.getNearPlaces);
-router.post(`${url}/placename/:attraction`, FoodPlaceController.getByAttraction)
+router.post(`${url}/placename/:attraction`, FoodPlaceController.getByAttraction);
+router.get(`${url}/topthree`, FoodPlaceController.getTopThreeResult);
+
 
 module.exports = router;

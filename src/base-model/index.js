@@ -30,6 +30,7 @@ const BaseDataEntity = extendSchema(BaseUserSchema, {
     required:true,
     enum:categories
   },
+  rating:Number,
   coordinates: {
     type: GeoSchema,
     required: true,
