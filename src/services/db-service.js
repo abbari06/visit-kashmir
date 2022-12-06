@@ -232,26 +232,42 @@ class dbService {
       };
     }
   }
+
+  async masterSearch(body) {
+    let query = [{ deletedFlag: false }];
+    if (body.filter) {
+      query = queryBuilder(body.filter);
+    }
+    try {
+      const item = await this.model.find({ $and: query });
+      if(!item.length==0){
+        return item
+      }
+      
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
 const queryBuilder = (data, id) => {
   // query = [{ deletedFlag: false }];
   var query = [
-    {
-      coordinates: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [74.809036, 34.069832],
-          },
-          $maxDistance: 400000,
-        },
-      },
-    },
+    // {
+    //   coordinates: {
+    //     $near: {
+    //       $geometry: {
+    //         type: "Point",
+    //         coordinates: [74.809036, 34.069832],
+    //       },
+    //       $maxDistance: 400000,
+    //     },
+    //   },
+    // },
   ];
-  query.push({
-    placeId: id,
-  });
+  // query.push({
+  //   placeId: id,
+  // });
   query.push({
     deletedFlag: false,
   });
@@ -294,7 +310,6 @@ const queryBuilder = (data, id) => {
       });
     }
   }
-
   return query;
 };
 const getPagination = (page, size) => {

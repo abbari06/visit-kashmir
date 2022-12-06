@@ -6,25 +6,30 @@ class MainController {
     autoBind(this);
 
   }
+
   async insert(req, res) {
     let response = await this.service.insert(req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
+
   async update(req, res) {
     const { id } = req.params;
     let response = await this.service.update(id, req.body);
     return res.status(response.statusCode).send(response);
   }
+
   async getList(req, res) {
     let response = await this.service.list(req.body);
     return res.status(201).send(response);
   }
+
   async getById(req, res) {
     const { id } = req.params;
     let response = await this.service.getById(id);
     return res.status(response.statusCode).send(response);
   }
+
   async delete(req, res) {
     const { id } = req.params;
     let response = await this.service.delete(id);
@@ -36,6 +41,7 @@ class MainController {
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
+
   async getNearPlaces(req,res){
     let response=await this.service.nearMe(req.body);
     if(response.error){
@@ -59,6 +65,11 @@ class MainController {
     let response = await this.service.getTopThree();
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
+  }
+
+  async masterSearch(req){
+    let response = await this.service.masterSearch(req.body);
+    return response;
   }
 }
 

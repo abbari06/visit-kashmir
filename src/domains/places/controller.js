@@ -17,6 +17,12 @@ class PlaceController extends MainController {
       return place
     }
   }
+
+  async listOfPlaces(req,res){
+    let response = await this.service.getPlaceNameAndId();
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
+  }
 }
 
 module.exports = new PlaceController(service);

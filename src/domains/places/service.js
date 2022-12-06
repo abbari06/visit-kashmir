@@ -18,6 +18,23 @@ class PlaceService extends dbService {
       };
     }
   }
+
+  async getPlaceNameAndId(){
+    console.log(this.model);
+    try {
+      const result = await this.model.find().select("name _id");
+      return  {
+        error:false,
+        statusCode:202,
+        result
+      };
+    } catch (error) {
+      return{
+      error:true,
+      statusCode:500,
+      error: "Something went wrong"}
+    }
+  }
 }
 
 module.exports = PlaceService;
