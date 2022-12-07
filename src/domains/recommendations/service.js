@@ -5,9 +5,11 @@ const FoodPlaceController = require("../food-places/controller");
 const RecreationalActivityController = require("../recreational-activities/controller");
 const PropertiesReader = require("properties-reader");
 const prop = PropertiesReader("app.properties");
+const PropertyReader = require("../../property-reader");
 class RecommendationService extends dbService {
   constructor(model) {
     super(model);
+    console.log(PropertyReader.getProperty("HOTEL_CHECKIN"))
   }
   async recommendationOnboardingData(body) {
     var placeId;
