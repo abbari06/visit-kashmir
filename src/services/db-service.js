@@ -209,7 +209,7 @@ class dbService {
 
   async recommendation(id, queryy) {
     const query = queryBuilder(queryy, id);
-    console.log(query);
+   console.log(query);
     try {
       const item = await this.model.find({ $and: query });
       return {
@@ -265,13 +265,9 @@ const queryBuilder = (data, id) => {
     //   },
     // },
   ];
-
-  if(id){
     query.push({
       placeId: id,
     });
-  }
-  
   query.push({
     deletedFlag: false,
   });
@@ -280,15 +276,18 @@ const queryBuilder = (data, id) => {
       query.push({
         [key]: { $in: value },
       });
-    } else if (key == "startingHrs") {
-      query.push({
-        [key]: { $gte: value },
-      });
-    } else if (key == "endingHrs") {
-      query.push({
-        [key]: { $lte: value },
-      });
-    } else if (key == "name") {
+    } 
+    // else if (key == "startingHrs") {
+    //   query.push({
+    //     [key]: { $gte: value },
+    //   });
+    // } 
+    // else if (key == "endingHrs") {
+    //   query.push({
+    //     [key]: { $lte: value },
+    //   });
+    // } 
+    else if (key == "name") {
       query.push({
         [key]: { $regex: value },
       });
@@ -296,19 +295,34 @@ const queryBuilder = (data, id) => {
       query.push({
         category: { $in: value },
       });
-    } else if (key == "currentDate") {
+    } 
+    else if (key == "currentDate") {
+      query.push({
+        endDate: { $gte: new Date(value) },
+        startDate:{$lte:new Date(value)}
+      });
+   } 
+  else if(key=="departureDate"){
+    query.push({
+      startDate: { $lte: new Date(value) },
+    });
+  }
+   else if (key == "arrivalDate") {
       query.push({
         endDate: { $gte: new Date(value) },
       });
-    } else if (key == "arrivalDate") {
-      query.push({
-        startDate: { $lte: new Date(value) },
-      });
-    } else if (key == "startSlotTime") {
+    }
+     else if (key == "startSlotTime") {
       query.push({
         endingHrs: { $gte: value },
       });
-    } else {
+    } 
+    else if (key == "endSlotTime") {
+      query.push({
+        startingHrs: { $lte: value },
+      });
+    } 
+    else {
       query.push({
         [key]: value,
       });
