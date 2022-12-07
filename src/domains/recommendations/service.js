@@ -3,13 +3,10 @@ const AttractionController = require("../attractions/controller");
 const EventController = require("../events/controller");
 const FoodPlaceController = require("../food-places/controller");
 const RecreationalActivityController = require("../recreational-activities/controller");
-const PropertiesReader = require("properties-reader");
-const prop = PropertiesReader("app.properties");
 const PropertyReader = require("../../property-reader");
 class RecommendationService extends dbService {
   constructor(model) {
     super(model);
-    console.log(PropertyReader.getProperty("HOTEL_CHECKIN"))
   }
   async recommendationOnboardingData(body) {
     var placeId;
@@ -22,12 +19,12 @@ class RecommendationService extends dbService {
     var endSlot;
     const arrivalDate = new Date(body.query.arrivalDate);
     console.log(arrivalDate);
-    const slot = getProperty("SLOT");
-    const hotelCheckInTime = getProperty("HOTEL_CHECKIN");
-    const arrivalToHotelTime = getProperty("ARRIVAL_TO_HOTEL");
-    const dayEndTime = getProperty("DAYEND_KMR");
-    const visitStartSLot = getProperty("VISIT_START_SLOT");
-    const visitEndSlot = getProperty("VISIT_END_SLOT");
+    const slot = PropertyReader.getProperty("SLOT");
+    const hotelCheckInTime = PropertyReader.getProperty("HOTEL_CHECKIN");
+    const arrivalToHotelTime = PropertyReader.getProperty("ARRIVAL_TO_HOTEL");
+    const dayEndTime = PropertyReader.getProperty("DAYEND_KMR");
+    const visitStartSLot = PropertyReader.getProperty("VISIT_START_SLOT");
+    const visitEndSlot =PropertyReader. getProperty("VISIT_END_SLOT");
     try {
       for (let i of body.itineraryForm) {
         const currentDate = arrivalDate.setDate(
@@ -142,7 +139,4 @@ class RecommendationService extends dbService {
   }
 }
 
-getProperty = (pty) => {
-  return prop.get(pty);
-};
 module.exports = RecommendationService;
