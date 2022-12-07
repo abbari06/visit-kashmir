@@ -9,6 +9,6 @@ router.delete(url+`/delete/:id`, RecreationalActivityController.delete);
 router.get(url+'/get/:id', RecreationalActivityController.getById);
 router.post(url+'/list', RecreationalActivityController.getList);
 router.post(`${url}/placename/:place`, RecreationalActivityController.getByPlaceName);
-router.post(`${url}/topthree`, RecreationalActivityController.getTopThreeResult);
+router.get(`${url}/topthree`, RecreationalActivityController.getTopThreeResult);
 
 module.exports = router;
