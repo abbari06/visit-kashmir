@@ -18,6 +18,8 @@ class RecommendationService extends dbService {
     const query = body.query;
     var startSlot;
     var endSlot;
+    const arrivalDate=new Date(body.query.arrivalDate);
+    console.log(arrivalDate)
     const slot=getProperty("SLOT");
     const hotelCheckInTime=getProperty("HOTEL_CHECKIN");
     const arrivalToHotelTime=getProperty("ARRIVAL_TO_HOTEL");
@@ -26,6 +28,8 @@ class RecommendationService extends dbService {
     const visitEndSlot=getProperty("VISIT_END_SLOT");
     try {
       for (let i of body.itineraryForm){
+        const currentDate=arrivalDate.setDate(arrivalDate.getDate()+i.day-1);
+        query.currentDate=currentDate;
         if(i.trigger=="arrival"){
           placeId=i.action;
           endSlot=visitEndSlot;
@@ -43,9 +47,7 @@ class RecommendationService extends dbService {
                     recommendations
                 }
                 });
-              
           }
-          
         }else{
           placeId=i.action;
           endSlot=visitEndSlot;

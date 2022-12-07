@@ -292,11 +292,11 @@ const queryBuilder = (data, id) => {
       query.push({
         category: { $in: value },
       });
-    } else if (key == "arrivalDate") {
+    } else if (key == "currentDate") {
       query.push({
         endDate: { $gte: new Date(value) },
       });
-    } else if (key == "departureDate") {
+    } else if (key == "arrivalDate") {
       query.push({
         startDate: { $lte: new Date(value) },
       });
