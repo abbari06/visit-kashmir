@@ -14,124 +14,74 @@ class RecommendationService extends dbService {
     var stayPlaceId=-1;
     const visitRecommendation = [];
     const stayRecommendation = [];
+   // const allRecommendations=[];
     const query = body.query;
     var startSlot;
     var endSlot;
+    const slot=getProperty("SLOT");
     const hotelCheckInTime=getProperty("HOTEL_CHECKIN");
-    const arrivalToHotelTime=getProperty("HOTEL_CHECKIN");
+    const arrivalToHotelTime=getProperty("ARRIVAL_TO_HOTEL");
     const dayEndTime=getProperty("DAYEND_KMR");
     const visitStartSLot=getProperty("VISIT_START_SLOT");
     const visitEndSlot=getProperty("VISIT_END_SLOT");
     try {
       for (let i of body.itineraryForm){
-        if(i.stay){
-           placeId=i.action;
-           stayPlaceId=placeId;
-          if(i.trigger=="arrival"){
-            startSlot=parseInt(i.arrivalTime)+hotelCheckInTime+arrivalToHotelTime;
-            query.startSlotTime = startSlot.toString();
-            endSlot=dayEndTime;
-          }
-          if(i.trigger=="visit"){
-            startSlot=visitStartSLot;
-            endSlot=dayEndTime;
-          }
-          query.startSlotTime = startSlot.toString();
-          const attractions = await AttractionController.getRecommendation(
-            placeId,
-            query
-          );
-          const foodplaces = await FoodPlaceController.getRecommendation(
-            placeId,
-            query
-          );
-          const events = await EventController.getRecommendation(
-            placeId,
-            query
-          );
-          const recreationalActivities =
-            await RecreationalActivityController.getRecommendation(
-              placeId,
-              query
-            );
-          stayRecommendation.push({
-            day: i.day,
-            attractions,
-            foodplaces,
-            events,
-            recreationalActivities,
-          });
-        }
-        if(!i.stay){
+        if(i.trigger=="arrival"){
           placeId=i.action;
-          if(i.trigger=="arrival"){
-            startSlot=parseInt(i.arrivalTime)+arrivalToHotelTime;
-            endSlot=visitEndSlot;
+          endSlot=visitEndSlot;
+          if(i.stay){
+            stayPlaceId=placeId;
+            endSlot=dayEndTime;
           }
-          if(i.trigger=="visit"){
-            startSlot=visitStartSLot;
-            endSlot=visitEndSlot;
-          }
-          query.startSlotTime = startSlot.toString();
-          const attractions = await AttractionController.getRecommendation(
-            placeId,
-            query
-          );
-          const foodplaces = await FoodPlaceController.getRecommendation(
-            placeId,
-            query
-          );
-          const events = await EventController.getRecommendation(
-            placeId,
-            query
-          );
-          const recreationalActivities =
-            await RecreationalActivityController.getRecommendation(
-              placeId,
-              query
-            );
-          visitRecommendation.push({
-            day: i.day,
-            attractions,
-            foodplaces,
-            events,
-            recreationalActivities,
-          });
-          if(stayPlaceId>-1){
-            startSlot=visitEndSlot+arrivalToHotelTime;
+          startSlot=parseInt(i.arrivalTime)+hotelCheckInTime+arrivalToHotelTime;
+          if(endSlot-startSlot>=slot){
             query.startSlotTime = startSlot.toString();
-            const attractions = await AttractionController.getRecommendation(
-              stayPlaceId,
-              query
-            );
-            const foodplaces = await FoodPlaceController.getRecommendation(
-              stayPlaceId,
-              query
-            );
-            const events = await EventController.getRecommendation(
-              stayPlaceId,
-              query
-            );
-            const recreationalActivities =
-              await RecreationalActivityController.getRecommendation(
-                stayPlaceId,
-                query
-              );
-            stayRecommendation.push({
-              day: i.day,
-              attractions,
-              foodplaces,
-              events,
-              recreationalActivities,
-            });
+            const recommendations=await this.getRecommendations(placeId,query);
+                const day=`day${i.day}`;
+                stayRecommendation.push({
+                  [day]:{
+                    recommendations
+                }
+                });
+              
+          }
+          
+        }else{
+          placeId=i.action;
+          endSlot=visitEndSlot;
+          if(i.stay){
+            stayPlaceId=placeId;
+            endSlot=dayEndTime;
+          }
+          startSlot=visitStartSLot;
+          if(endSlot-startSlot>=slot){
+            query.startSlotTime = startSlot.toString();
+            const recommendations=await this.getRecommendations(placeId,query);
+                const day=`day${i.day}`;
+                visitRecommendation.push({
+                  [day]:{
+                    recommendations
+                }
+                });
+                if(stayPlaceId>-1 && stayPlaceId!=placeId){
+                  const recommendations=await this.getRecommendations(stayPlaceId,query);
+                  const day=`day${i.day}`;
+                  stayRecommendation.push({
+                    [day]:{
+                      recommendations
+                  }
+                });
+              
           }
         }
+      }
       }
       return {
         error: false,
         statusCode: 202,
-        visitRecommendation,
-        stayRecommendation
+        stayRecommendation,
+        visitRecommendation
+        
       };
     } catch (error) {
       console.log(error);
@@ -143,6 +93,29 @@ class RecommendationService extends dbService {
       };
     }
   }
+  async getRecommendations(placeId,query){
+    const attractions = await AttractionController.getRecommendation(
+      placeId,
+      query
+    );
+    const foodplaces = await FoodPlaceController.getRecommendation(
+      placeId,
+      query
+    );
+    const events = await EventController.getRecommendation(
+      placeId,
+      query
+    );
+    const recreationalActivities =await
+      RecreationalActivityController.getRecommendation(
+        placeId,
+        query
+      );
+      return {attractions,foodplaces,
+        events,
+        recreationalActivities,}
+  }
 }
+
 getProperty = (pty) => {return prop.get(pty);}
 module.exports = RecommendationService;
