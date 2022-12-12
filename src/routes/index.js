@@ -9,6 +9,7 @@ const RecommendationRouter = require("../domains/recommendations/routes");
 const FoodPlaceRouter = require("../domains/food-places/routes");
 const MasterSearchRouter = require("../domains/master-search/routes");
 const CategoriesRouter = require("../domains/categories/routes");
+const UserRouter = require("../domains/users/routes");
 router.use(PlaceRouter);
 router.use(AttractionRouter);
 router.use(RecreationalActivityRouter);
@@ -17,5 +18,6 @@ router.use(FoodPlaceRouter);
 router.use(RecommendationRouter);
 router.use(MasterSearchRouter);
 router.use(CategoriesRouter);
+router.use(UserRouter);
 
 module.exports = router;

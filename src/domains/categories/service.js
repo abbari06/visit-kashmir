@@ -19,7 +19,7 @@ const categories = [
   {"icon": "Icons.mosque", "text": "Religious Sites"},
   {"icon": "Icons.temple_buddhist", "text": "Ancient Ruins"},
   {"icon": "Icons.directions_car", "text": "Scenic Drives"},
-  {"icon": "Icons.water,", "text": "Water Bodies"}
+  {"icon": "Icons.water", "text": "Water Bodies"}
 ];
 
 class CategoriesService {
