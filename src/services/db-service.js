@@ -27,7 +27,6 @@ class dbService {
   }
 
   async list(body) {
-    console.log(body);
     var limit = body.limit || 10;
     var page = body.page || 0;
     const offset = getPagination(page, limit);

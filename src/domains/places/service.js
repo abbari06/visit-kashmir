@@ -20,7 +20,6 @@ class PlaceService extends dbService {
   }
 
   async getPlaceNameAndId(){
-    console.log(this.model);
     try {
       const result = await this.model.find().select("name _id");
       return  {

@@ -39,7 +39,7 @@ class Place {
     PlaceShema.plugin(mongoosePaginate);
     PlaceShema.plugin(autoIncrement.plugin, { model: "places", field: "_id" });
     PlaceShema.index({ coordinates: "2dsphere" })
-    mongoose.model("places", PlaceShema);
+    mongoose.models.places || mongoose.model("places", PlaceShema); 
   }
   getInstance() {
     this.initSchema();

@@ -60,7 +60,7 @@ class RecreationalActivity {
       field: "_id",
     });
     RecreationalActivitySchema.index({ coordinates: "2dsphere" });
-    mongoose.model("recreationalActivities", RecreationalActivitySchema);
+    mongoose.models.recreationalActivities || mongoose.model("recreationalActivities", RecreationalActivitySchema);
   }
   getInstance() {
     this.initSchema();
