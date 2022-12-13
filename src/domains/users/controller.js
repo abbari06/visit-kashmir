@@ -9,9 +9,10 @@ class UserController extends MainController{
         super(service);
         autoBind(this);
       }
-    async createUser(req,res){
-        let response = await this.service.createUser(req.body);
-        if (response.error) return res.status(response.statusCode).send(response);
+     async register(req,res){
+        let response = await this.service.registerUser(req.body);
+        console.log(response);
+        // if (response.error) return res.status(response.statusCode).send(response);
         return res.status(202).send(response);
     }
 }
