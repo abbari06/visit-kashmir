@@ -17,7 +17,7 @@ class RecommendationService extends dbService {
     ];
     var placeId;
     var stayPlaceId = -1;
-    const allRecommendations = [];
+    const allRecommendations = {};
     const query = body.query;
     var startSlot;
     var endSlot;
@@ -32,7 +32,7 @@ class RecommendationService extends dbService {
     let mm = 0;
     try {
       for (let i of body.itineraryForm) {
-        const obj = [];
+        let obj = {};
         const currentDate = arrivalDate.setDate(
           arrivalDate.getDate() + i.day - 1
         );
@@ -49,7 +49,8 @@ class RecommendationService extends dbService {
           if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
-            obj.push(await this.getRecommendations(placeId, query));
+            // obj.push(await this.getRecommendations(placeId, query));
+            obj=await this.getRecommendations(placeId, query);
             const day = `${i.day}`;
             if (stayPlaceId > -1 && stayPlaceId != placeId) {
               [hh, mm] = visitEndSlot.split(":").map((x) => parseInt(x));
@@ -61,21 +62,22 @@ class RecommendationService extends dbService {
               if (isSlot) {
                 query.startSlotTime = startSlot;
                 query.endSlotTime = endSlot;
-                console.log("stayyy");
+                console.log("stayyy",stayPlaceId);
                 const stayRecommendation = [];
                 stayRecommendation.push(
                   await this.getRecommendations(stayPlaceId, query)
                 );
+                console.log(stayRecommendation);
                 for (let key of keys) {
-                  obj[0][key]["item"].push(stayRecommendation[0][key]["item"]);
+                  //console.log(key);
+                  console.log(obj[key]);
+                  obj[key].push(stayRecommendation[0][key]);
                 }
               }
             }
-            allRecommendations.push({
-              [day]: obj,
-            });
+            allRecommendations[day]=obj;
           }
-        } else {
+        } else {//only for arrival once
           placeId = i.action;
           endSlot = dayEndTime;
           if (!i.stay) {
@@ -91,11 +93,14 @@ class RecommendationService extends dbService {
           if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
-            obj.push(await this.getRecommendations(placeId, query));
+            // obj.push(await this.getRecommendations(placeId, query));
+            obj=await this.getRecommendations(placeId, query);
+            console.log(placeId,stayPlaceId);
             const day = `${i.day}`;
-            allRecommendations.push({
-              [day]: obj,
-            });
+            // allRecommendations.push({
+            //   [day]: obj,
+            // });
+            allRecommendations[day]=obj;
           }
         }
       }
