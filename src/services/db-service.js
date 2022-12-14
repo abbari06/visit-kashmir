@@ -57,11 +57,17 @@ class dbService {
       let item = await this.model.findByIdAndUpdate(_id, data, {
         returnOriginal: false,
       });
-      return {
-        error: false,
-        statusCode: 202,
-        item,
-      };
+      if(item){
+        return {
+          statusCode:200,
+          data:item
+        }
+      }else{
+        return {
+          statusCode:404,
+          data:"Not found"
+        }
+      }
     } catch (error) {
       return {
         error: true,
@@ -209,12 +215,9 @@ class dbService {
 
   async recommendation(id, queryy) {
     const query = queryBuilder(queryy, id);
-   console.log(query);
+   //console.log(query);
     try {
-      const item = await this.model.find({ $and: query });
-      return {
-        item,
-      };
+      return await this.model.find({ $and: query });
     } catch (error) {
       return {
         message: error.errmsg || "Something went wrong",
@@ -265,9 +268,9 @@ const queryBuilder = (data, id) => {
     //   },
     // },
   ];
-    // query.push({
-    //   placeId: id,
-    // });
+    query.push({
+      placeId: id,
+    });
   query.push({
     deletedFlag: false,
   });
