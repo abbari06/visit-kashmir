@@ -9,109 +9,100 @@ class RecommendationService extends dbService {
     super(model);
   }
   async recommendationOnboardingData(body) {
+    const keys = [
+      "attractions",
+      "foodplaces",
+      "events",
+      "recreationalActivities",
+    ];
     var placeId;
     var stayPlaceId = -1;
-    const visitRecommendation = [];
-    const stayRecommendation = [];
-    // const allRecommendations=[];
+    const allRecommendations = [];
     const query = body.query;
     var startSlot;
     var endSlot;
     const arrivalDate = new Date(body.query.arrivalDate);
-    console.log(arrivalDate);
     const slot = PropertyReader.getProperty("SLOT");
     const hotelCheckInTime = PropertyReader.getProperty("HOTEL_CHECKIN");
     const arrivalToHotelTime = PropertyReader.getProperty("ARRIVAL_TO_HOTEL");
     const dayEndTime = PropertyReader.getProperty("DAYEND_KMR");
     const visitStartSLot = PropertyReader.getProperty("VISIT_START_SLOT");
-    const visitEndSlot =PropertyReader. getProperty("VISIT_END_SLOT");
+    const visitEndSlot = PropertyReader.getProperty("VISIT_END_SLOT");
+    let hh = 0;
+    let mm = 0;
     try {
       for (let i of body.itineraryForm) {
+        const obj = [];
         const currentDate = arrivalDate.setDate(
           arrivalDate.getDate() + i.day - 1
         );
         query.currentDate = currentDate;
-        if (i.trigger == "arrival") {
+        if (i.trigger == "visit") {
           placeId = i.action;
           endSlot = visitEndSlot;
-          if (i.stay) {
-            stayPlaceId = placeId;
-            endSlot = dayEndTime;
-          }
-          startSlot =
-            parseInt(i.arrivalTime) + hotelCheckInTime + arrivalToHotelTime;
-          if (endSlot - startSlot >= slot) {
-            if(startSlot<10){
-              startSlot=`${startSlot}`
-            }
-            startSlot=`${startSlot}:00`
-            if(endSlot<10){
-              endSlot=`0${endSlot}`
-            }
-            endSlot=`${endSlot}:00`
-            query.startSlotTime = startSlot;
-            query.endSlotTime = endSlot;
-            
-            const recommendations = await this.getRecommendations(
-              placeId,
-              query
-            );
-            const day = `day${i.day}`;
-            stayRecommendation.push({
-              [day]: {
-                recommendations,
-              },
-            });
-          }
-        } else {
-          placeId = i.action;
-          endSlot = visitEndSlot;
-          if (i.stay || stayPlaceId==placeId) {
+          if (i.stay || stayPlaceId == placeId) {
             stayPlaceId = placeId;
             endSlot = dayEndTime;
           }
           startSlot = visitStartSLot;
-          if (endSlot - startSlot >= slot) {
-            if(startSlot<10){
-              startSlot=`0${startSlot}`
-            }
-            startSlot=`${startSlot}:00`
-            if(endSlot<10){
-              endSlot=`0${endSlot}`
-            }
-            endSlot=`${endSlot}:00`
+          const isSlot = await this.getSlots(endSlot, startSlot, slot);
+          if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
-            const recommendations = await this.getRecommendations(
-              placeId,
-              query
-            );
-            const day = `day${i.day}`;
-            visitRecommendation.push({
-              [day]: {
-                recommendations,
-              },
-            });
+            obj.push(await this.getRecommendations(placeId, query));
+            const day = `${i.day}`;
             if (stayPlaceId > -1 && stayPlaceId != placeId) {
-              const recommendations = await this.getRecommendations(
-                stayPlaceId,
-                query
-              );
-              const day = `day${i.day}`;
-              stayRecommendation.push({
-                [day]: {
-                  recommendations,
-                },
-              });
+              [hh, mm] = visitEndSlot.split(":").map((x) => parseInt(x));
+              hh = hh + slot * arrivalToHotelTime;
+              const tempDate = arrivalDate.setHours(hh, mm);
+              startSlot = new Date(tempDate).toTimeString();
+              endSlot = dayEndTime;
+              const isSlot = await this.getSlots(endSlot, startSlot, slot);
+              if (isSlot) {
+                query.startSlotTime = startSlot;
+                query.endSlotTime = endSlot;
+                console.log("stayyy");
+                const stayRecommendation = [];
+                stayRecommendation.push(
+                  await this.getRecommendations(stayPlaceId, query)
+                );
+                for (let key of keys) {
+                  obj[0][key]["item"].push(stayRecommendation[0][key]["item"]);
+                }
+              }
             }
+            allRecommendations.push({
+              [day]: obj,
+            });
+          }
+        } else {
+          placeId = i.action;
+          endSlot = dayEndTime;
+          if (!i.stay) {
+            placeId = i.stayPlaceId;
+          }
+          stayPlaceId=placeId;
+          var aTime = i.arrivalTime;
+          [hh, mm] = aTime.split(":").map((x) => parseInt(x));
+          hh = hh + slot * hotelCheckInTime + slot * arrivalToHotelTime;
+          const tempDate = arrivalDate.setHours(hh, mm);
+          startSlot = new Date(tempDate).toTimeString();
+          const isSlot = await this.getSlots(endSlot, startSlot, slot);
+          if (isSlot) {
+            query.startSlotTime = startSlot;
+            query.endSlotTime = endSlot;
+            obj.push(await this.getRecommendations(placeId, query));
+            const day = `${i.day}`;
+            allRecommendations.push({
+              [day]: obj,
+            });
           }
         }
       }
       return {
         error: false,
         statusCode: 202,
-        stayRecommendation,
-        visitRecommendation,
+        allRecommendations,
       };
     } catch (error) {
       console.log(error);
@@ -122,6 +113,16 @@ class RecommendationService extends dbService {
         errors: error.errors,
       };
     }
+  }
+  async getSlots(endSlot, startSlot, slot) {
+    let [ehh, emm] = endSlot.split(":").map((x) => parseInt(x));
+    let [shh, smm] = startSlot.split(":").map((x) => parseInt(x));
+    ehh = ehh + emm / 100;
+    shh = shh + smm / 100;
+    if (ehh - shh >= slot) {
+      return true;
+    }
+    return false;
   }
   async getRecommendations(placeId, query) {
     const attractions = await AttractionController.getRecommendation(
@@ -138,5 +139,4 @@ class RecommendationService extends dbService {
     return { attractions, foodplaces, events, recreationalActivities };
   }
 }
-
 module.exports = RecommendationService;

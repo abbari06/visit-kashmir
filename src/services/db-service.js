@@ -277,41 +277,42 @@ const queryBuilder = (data, id) => {
         [key]: { $in: value },
       });
     } 
-    // else if (key == "startingHrs") {
-    //   query.push({
-    //     [key]: { $gte: value },
-    //   });
-    // } 
-    // else if (key == "endingHrs") {
-    //   query.push({
-    //     [key]: { $lte: value },
-    //   });
-    // } 
+    else if (key == "startingHrs") {
+      query.push({
+        [key]: { $gte: value },
+      });
+    } 
+    else if (key == "endingHrs") {
+      query.push({
+        [key]: { $lte: value },
+      });
+    } 
     else if (key == "name") {
       query.push({
         [key]: { $regex: value },
       });
-    } else if (key == "interests") {
+    } 
+    else if (key == "interests") {
       query.push({
         category: { $in: value },
       });
     } 
+    else if(key=="departureDate"){
+      query.push({
+        startDate: { $lte: new Date(value) },
+      });
+    }
+     else if (key == "arrivalDate") {
+        query.push({
+          endDate: { $gte: new Date(value) },
+        });
+      }
     else if (key == "currentDate") {
       query.push({
         endDate: { $gte: new Date(value) },
         startDate:{$lte:new Date(value)}
       });
    } 
-  else if(key=="departureDate"){
-    query.push({
-      startDate: { $lte: new Date(value) },
-    });
-  }
-   else if (key == "arrivalDate") {
-      query.push({
-        endDate: { $gte: new Date(value) },
-      });
-    }
      else if (key == "startSlotTime") {
       query.push({
         endingHrs: { $gte: value },
