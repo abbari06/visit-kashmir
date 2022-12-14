@@ -265,9 +265,9 @@ const queryBuilder = (data, id) => {
     //   },
     // },
   ];
-    query.push({
-      placeId: id,
-    });
+    // query.push({
+    //   placeId: id,
+    // });
   query.push({
     deletedFlag: false,
   });
