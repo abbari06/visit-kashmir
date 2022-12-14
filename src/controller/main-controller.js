@@ -16,7 +16,7 @@ class MainController {
   async update(req, res) {
     const { id } = req.params;
     let response = await this.service.update(id, req.body);
-    return res.status(response.statusCode).send(response);
+    return res.status(response.statusCode).send(response.data);
   }
 
   async getList(req, res) {

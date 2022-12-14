@@ -25,9 +25,7 @@ class User {
           lowercase: true,
         },
         email: {
-          type: String,
-          unique: true,
-        },
+          type: String        },
         lastLoginTime: {
           type: Date,
         },

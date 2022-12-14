@@ -8,66 +8,131 @@ class UserService extends dbService {
     super(model);
   }
   async registerUser(newUser) {
-    await this.model.findOne({ phone: newUser.phone }).then((err, data) => {
-      if (err) throw err;
-      else if (data != undefined) {
-        console.log("user registered");
-        return "User already register!";
+    if (newUser.phone) {
+      const user = await this.model.findOne({ phone: newUser.phone });
+      if (user) {
+        return {
+          message: "user is already registered!",
+        };
       } else {
-        console.log(" registered");
-        return "send"
-        // client.verify
-        // .services(process.env.TWILIO_SERVICE_ID)
-        // .verifications.create({
-        //   to: `+${newUser.phone}`,
-        //   channel: "sms",
-        // })
-        // .then((data) => {
-        //   return {
-        //     message: "Verification is send",
-        //     data,
-        //   };
-        // });
+        let response = null;
+        await client.verify
+          .services(process.env.TWILIO_SERVICE_ID)
+          .verifications.create({
+            to: `+${newUser.phone}`,
+            channel: "sms",
+          })
+          .then((data) => {
+            response = data;
+          });
+        return {
+          message: "Verification code has been sent successfully",
+          response,
+        };
       }
-    });
+    } else {
+      return {
+        error: true,
+        message: "Wrong phone number",
+      };
+    }
   }
-  //  await this.model.findOne({ phone: newUser.phone }, (err, result) => {
-  //     if (err) throw err;
-  //     console.log(err);
-  //     if (result != null) {
-  //       return "User is already registered!";
-  //     } else {
-  //       client.verify
-  //         .services(process.env.TWILIO_SERVICE_ID)
-  //         .verifications.create({
-  //           to: `+${newUser.phone}`,
-  //           channel: "sms",
-  //         })
-  //         .then((data) => {
-  //           return {
-  //             message: "Verification is send",
-  //             data,
-  //           };
-  //         });
-  //     }
-  //   });
-  //   const user = await this.model.findOne({ phone: newUser.phone });
-  //   if (user) {
-  //     return "User is already registered";
-  //   } else {
-  //     client.verify
-  //       .services(process.env.TWILIO_SERVICE_ID)
-  //       .verifications.create({
-  //         to: `+${newUser.phone}`,
-  //         channel: "sms",
-  //       })
-  //       .then((data) => {
-  //         return {
-  //           message: "Verification is send",
-  //           data,
-  //         };
-  //       });
-  //   }
-  // }
+
+  async verifyUser(newUser) {
+    let result = null;
+    await client.verify
+      .services(process.env.TWILIO_SERVICE_ID)
+      .verificationChecks.create({
+        to: `+${newUser.phone}`,
+        code: newUser.code,
+      })
+      .then(async (data) => {
+        if (data.status === "approved") {
+          let user = new this.model({
+            phone: newUser.phone,
+          });
+          let saveUser = await user.save();
+          if (saveUser) {
+            result = {
+              message: "user saved successfully",
+              user: saveUser,
+            };
+          } else {
+            result = {
+              error: true,
+              statusCode: 500,
+              message: "Something went wrong!!",
+            };
+          }
+        } else {
+          result = {
+            error: true,
+            statusCode: 400,
+            message: "Invalid code!!",
+          };
+        }
+      });
+    return result;
+  }
+
+  async loginUser(user) {
+    let User = await this.model.findOne({ phone: user.phone });
+    if (!User) {
+      return {
+        statusCode: 404,
+        data: "User not found!!",
+      };
+    } else {
+      let response = null;
+      await client.verify
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verifications.create({
+          to: `+${user.phone}`,
+          channel: "sms",
+        })
+        .then((data) => {
+          response = data;
+        });
+      return {
+        statusCode: 202,
+        message: "Verification code has been sent successfully",
+        data: response,
+      };
+    }
+  }
+
+  async loginVerifyUser(user) {
+    let result = null;
+    await client.verify
+      .services(process.env.TWILIO_SERVICE_ID)
+      .verificationChecks.create({
+        to: `+${user.phone}`,
+        code: user.code,
+      })
+      .then(async (data) => {
+        if (data.status === "approved") {
+          let verifiedUser = await this.model.findOne({ phone: user.phone });
+          if (verifiedUser) {
+            result = {
+              statusCode: 202,
+              data: verifiedUser,
+            };
+          } else {
+            result = {
+              statusCode: 500,
+              data: "Something went wrong please try again!!",
+            };
+          }
+        } else {
+          result = {
+            error: true,
+            statusCode: 400,
+            data: "Invalid code!!",
+          };
+        }
+      });
+    return result;
+  }
 }
+
 module.exports = UserService;
