@@ -17,7 +17,7 @@ class RecommendationService extends dbService {
     ];
     var placeId;
     var stayPlaceId = -1;
-    const allRecommendations = {};
+    const data = {};
     const query = body.query;
     var startSlot;
     var endSlot;
@@ -49,7 +49,6 @@ class RecommendationService extends dbService {
           if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
-            // obj.push(await this.getRecommendations(placeId, query));
             obj=await this.getRecommendations(placeId, query);
             const day = `${i.day}`;
             if (stayPlaceId > -1 && stayPlaceId != placeId) {
@@ -69,13 +68,12 @@ class RecommendationService extends dbService {
                 );
                 console.log(stayRecommendation);
                 for (let key of keys) {
-                  //console.log(key);
                   console.log(obj[key]);
                   obj[key].push(stayRecommendation[0][key]);
                 }
               }
             }
-            allRecommendations[day]=obj;
+            data[day]=obj;
           }
         } else {//only for arrival once
           placeId = i.action;
@@ -93,21 +91,17 @@ class RecommendationService extends dbService {
           if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
-            // obj.push(await this.getRecommendations(placeId, query));
             obj=await this.getRecommendations(placeId, query);
             console.log(placeId,stayPlaceId);
             const day = `${i.day}`;
-            // allRecommendations.push({
-            //   [day]: obj,
-            // });
-            allRecommendations[day]=obj;
+            data[day]=obj;
           }
         }
       }
       return {
         error: false,
         statusCode: 202,
-        allRecommendations,
+        data,
       };
     } catch (error) {
       console.log(error);
