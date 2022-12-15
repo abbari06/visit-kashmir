@@ -35,13 +35,23 @@ class dbService {
     if (body.filter) {
       query = queryBuilder(body.filter);
     }
+    let obj={};
     try {
-      let list = await this.model.paginate({ $and: query }, { offset, limit });
-      return {
+       obj=await this.model.paginate({ $and: query }, { offset, limit })
+      return{
         error: false,
         statusCode: 202,
-        list,
-      };
+      data:obj.docs,
+      totalDocs:obj.totalDocs,
+      offset:obj.offset,
+      limit:obj.limit,
+      totalPages:obj.totalPages,
+      page:obj.page,
+      pagingCounter:obj.pagingCounter,
+      hasNextPage:obj.hasNextPage,
+      hasPrevPage:obj.hasPrevPage
+      }
+      
     } catch (error) {
       return {
         error: true,
@@ -228,7 +238,7 @@ class dbService {
   async getTopThree() {
     try {
       const item = await this.model.find().sort({ rating: -1 }).limit(3);
-      return { error: false, statusCode: 202, item };
+      return { error: false, statusCode: 202, data:item };
     } catch (error) {
       return {
         message: error.errmsg || "Something went wrong",
