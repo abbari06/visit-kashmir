@@ -61,15 +61,14 @@ class RecommendationService extends dbService {
               if (isSlot) {
                 query.startSlotTime = startSlot;
                 query.endSlotTime = endSlot;
-                console.log("stayyy",stayPlaceId);
                 const stayRecommendation = [];
                 stayRecommendation.push(
                   await this.getRecommendations(stayPlaceId, query)
                 );
-                console.log(stayRecommendation);
                 for (let key of keys) {
-                  console.log(obj[key]);
-                  obj[key].push(stayRecommendation[0][key]);
+                  for(let i=0;i<stayRecommendation[0][key].length;i++){
+                    obj[key].push(stayRecommendation[0][key][i]);
+                  }
                 }
               }
             }
@@ -92,7 +91,6 @@ class RecommendationService extends dbService {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
             obj=await this.getRecommendations(placeId, query);
-            console.log(placeId,stayPlaceId);
             const day = `${i.day}`;
             data[day]=obj;
           }
