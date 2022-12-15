@@ -40,39 +40,47 @@ class UserService extends dbService {
 
   async verifyUser(newUser) {
     let result = null;
-    await client.verify
-      .services(process.env.TWILIO_SERVICE_ID)
-      .verificationChecks.create({
-        to: `+${newUser.phone}`,
-        code: newUser.code,
-      })
-      .then(async (data) => {
-        if (data.status === "approved") {
-          let user = new this.model({
-            phone: newUser.phone,
-          });
-          let saveUser = await user.save();
-          if (saveUser) {
-            result = {
-              message: "user saved successfully",
-              user: saveUser,
-            };
+    try {
+      await client.verify
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verificationChecks.create({
+          to: `+${newUser.phone}`,
+          code: newUser.code,
+        })
+        .then(async (data) => {
+          if (data.status === "approved") {
+            let user = new this.model({
+              phone: newUser.phone,
+            });
+            let saveUser = await user.save();
+            if (saveUser) {
+              result = {
+                message: "user saved successfully",
+                user: saveUser,
+              };
+            } else {
+              result = {
+                error: true,
+                statusCode: 500,
+                message: "Something went wrong!!",
+              };
+            }
           } else {
             result = {
               error: true,
-              statusCode: 500,
-              message: "Something went wrong!!",
+              statusCode: 400,
+              message: "Invalid code!!",
             };
           }
-        } else {
-          result = {
-            error: true,
-            statusCode: 400,
-            message: "Invalid code!!",
-          };
-        }
+        });
+      return result;
+    } catch (error) {
+      return (result = {
+        statusCode: error.status,
+        error: true,
+        message: "Not found",
       });
-    return result;
+    }
   }
 
   async loginUser(user) {
@@ -103,7 +111,8 @@ class UserService extends dbService {
 
   async loginVerifyUser(user) {
     let result = null;
-    await client.verify
+    try {
+      await client.verify
       .services(process.env.TWILIO_SERVICE_ID)
       .verificationChecks.create({
         to: `+${user.phone}`,
@@ -132,6 +141,14 @@ class UserService extends dbService {
         }
       });
     return result;
+    } catch (error) {
+      return (result = {
+        statusCode: error.status,
+        error: true,
+        data: "Not found",
+      });
+    }
+   
   }
 }
 

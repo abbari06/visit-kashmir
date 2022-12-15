@@ -27,7 +27,6 @@ class UserController extends MainController{
     }
 
     async verifyLogin(req,res){
-        console.log(req.body);
         let response = await this.service.loginVerifyUser(req.body);
         if(response.error) return res.status(response.statusCode).send(response.data);
         return res.status(response.statusCode).send(response.data);
