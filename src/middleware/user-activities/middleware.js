@@ -1,30 +1,27 @@
 const UserActivities = require("./UserActivities");
 const Activities = new UserActivities().getInstance();
+var ip = require('ip');
 class UserActivitiesMiddleware {
   constructor() {}
 
   async saveUserReqRes(req, res, next) {
-    const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift()
-    || req.socket?.remoteAddress
-
-console.log(parseIp(req))
     let response = null;
     const oldJson = res.json;
     res.json = async (body) => {
       res.locals.body = body;
       response = body;
-      if (req.body.userId !=null) {
-        console.log(req.body.userId, response)
+      if (req.body.userId != null) {
         const UserActivities = await Activities.findOne({
           userId: req.body.userId,
         });
         if (UserActivities) {
+          UserActivities.ipaddress = ip.address();
           UserActivities.reqData.push(req.body);
           UserActivities.resData.push(response);
           UserActivities.save();
         } else {
           await Activities.create({
+            ipaddress : ip.address(),
             userId: req.body.userId,
             reqData: [req.body],
             resData: [response],
