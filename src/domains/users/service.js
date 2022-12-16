@@ -122,6 +122,8 @@ class UserService extends dbService {
         if (data.status === "approved") {
           let verifiedUser = await this.model.findOne({ phone: user.phone });
           if (verifiedUser) {
+            verifiedUser.lastLoginTime = Date.now();
+            verifiedUser.save();
             result = {
               statusCode: 202,
               data: verifiedUser,

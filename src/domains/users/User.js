@@ -7,12 +7,12 @@ const mongoosePaginate = require("mongoose-paginate-v2");
 class User {
   initSchema() {
     const UserShema = extendSchema(
-        BaseUserSchema,
+      BaseUserSchema,
       {
         phone: {
           type: Number,
           required: true,
-          unique:true
+          unique: true,
         },
         firstname: {
           type: String,
@@ -25,7 +25,8 @@ class User {
           lowercase: true,
         },
         email: {
-          type: String        },
+          type: String,
+        },
         lastLoginTime: {
           type: Date,
         },

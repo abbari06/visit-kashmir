@@ -4,6 +4,11 @@ class UserActivitiesMiddleware {
   constructor() {}
 
   async saveUserReqRes(req, res, next) {
+    const parseIp = (req) =>
+    req.headers['x-forwarded-for']?.split(',').shift()
+    || req.socket?.remoteAddress
+
+console.log(parseIp(req))
     let response = null;
     const oldJson = res.json;
     res.json = async (body) => {
