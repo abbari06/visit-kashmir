@@ -49,7 +49,7 @@ class RecommendationService extends dbService {
           if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
-            obj=await this.getRecommendations(placeId, query);
+            obj = await this.getRecommendations(placeId, query);
             const day = `${i.day}`;
             if (stayPlaceId > -1 && stayPlaceId != placeId) {
               [hh, mm] = visitEndSlot.split(":").map((x) => parseInt(x));
@@ -66,21 +66,22 @@ class RecommendationService extends dbService {
                   await this.getRecommendations(stayPlaceId, query)
                 );
                 for (let key of keys) {
-                  for(let i=0;i<stayRecommendation[0][key].length;i++){
+                  for (let i = 0; i < stayRecommendation[0][key].length; i++) {
                     obj[key].push(stayRecommendation[0][key][i]);
                   }
                 }
               }
             }
-            data[day]=obj;
+            data[day] = obj;
           }
-        } else {//only for arrival once
+        } else {
+          //only for arrival once
           placeId = i.action;
           endSlot = dayEndTime;
           if (!i.stay) {
             placeId = i.stayPlaceId;
           }
-          stayPlaceId=placeId;
+          stayPlaceId = placeId;
           var aTime = i.arrivalTime;
           [hh, mm] = aTime.split(":").map((x) => parseInt(x));
           hh = hh + slot * hotelCheckInTime + slot * arrivalToHotelTime;
@@ -90,9 +91,9 @@ class RecommendationService extends dbService {
           if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
-            obj=await this.getRecommendations(placeId, query);
+            obj = await this.getRecommendations(placeId, query);
             const day = `${i.day}`;
-            data[day]=obj;
+            data[day] = obj;
           }
         }
       }
@@ -102,7 +103,6 @@ class RecommendationService extends dbService {
         data,
       };
     } catch (error) {
-      console.log(error);
       return {
         error: true,
         statusCode: 500,
@@ -134,6 +134,66 @@ class RecommendationService extends dbService {
     const recreationalActivities =
       await RecreationalActivityController.getRecommendation(placeId, query);
     return { attractions, foodplaces, events, recreationalActivities };
+  }
+
+  async saveUserRecommendation(body) {
+    try {
+      let UserRecommendation = await this.model.findOne({
+        userId: body.userId,
+      });
+      if (!UserRecommendation) {
+        try {
+          let newUserRecommendation = await this.model.create(body);
+          if (newUserRecommendation) {
+            return {
+             data:newUserRecommendation
+            };
+          }
+        } catch (error) {
+          return {
+            error: true,
+            statusCode: 500,
+            message: error.errmsg || "Not able to create",
+            errors: error.errors,
+          };
+        }
+      } else {
+        if (body.userRecommendations != null) {
+          let userRecommendations = await this.model.updateOne(
+            { userId: body.userId },
+            { $push: { userRecommendations:{$each:body.userRecommendations}  } }
+          );
+          return {
+            data:"Recommendation updated successfully"
+          }
+        }
+      }
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 500,
+        message: error.errmsg || "Not able to create",
+        errors: error.errors,
+      };
+    }
+  }
+
+  async getUserRecommendation(body){
+    try {
+     let recommendations =  await this.model.findOne({userId:body.userId});
+     if(recommendations){
+      return {
+        data:recommendations
+      }
+     
+     } else throw new error
+    } catch (error) {
+      return {
+        error:true,
+        statusCode:500,
+        message:error.message
+      }
+    }
   }
 }
 module.exports = RecommendationService;

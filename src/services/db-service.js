@@ -342,6 +342,7 @@ const queryBuilder = (data, id) => {
       });
     }
   }
+  console.log(query);
   return query;
 };
 const getPagination = (page, size) => {

@@ -8,39 +8,15 @@ class Recommendation {
     const RecommendationSchema = extendSchema(
       BaseUserSchema,
       {
-        RecommendationBooked: {
-          type: Boolean,
+        userId: {
+          type: Number,
+          required: true,
         },
-        caterory: {
-          type: [String],
-          enum: ["foodplace", "place"],
+        userRecommendations: {
+          type: [],
         },
-        travelBy: {
-          type: String,
-        },
-        arrivalDate: {
+        expiryDate: {
           type: Date,
-          required: true,
-        },
-        adults: {
-          type: Number,
-        },
-
-        childrens: {
-          type: Number,
-        },
-        totalDaysStay: {
-          type: Number,
-          required: true,
-        },
-        travelerType: {
-          type: String,
-        },
-        interests: {
-          type: [],
-        },
-        itineryForm: {
-          type: [],
         },
       },
       {
@@ -51,7 +27,6 @@ class Recommendation {
       model: "Recommendations",
       field: "_id",
     });
-    RecommendationSchema.index({ coordinates: "2dsphere" });
     mongoose.model("Recommendations", RecommendationSchema);
   }
 
