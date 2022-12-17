@@ -65,7 +65,7 @@ class RecommendationService extends dbService {
                 stayRecommendation.push(
                   await this.getRecommendations(stayPlaceId, query)
                 );
-                for (let key of keys) {
+                for (let key of Object.keys(obj) ) {
                   for (let i = 0; i < stayRecommendation[0][key].length; i++) {
                     obj[key].push(stayRecommendation[0][key][i]);
                   }
