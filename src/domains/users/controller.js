@@ -17,6 +17,7 @@ class UserController extends MainController{
     async verify(req,res){
         let response = await this.service.verifyUser(req.body);
         if (response.error) return res.status(response.statusCode).send(response);
+        res.header('Authorization', response.token);
         return res.status(202).send(response);
     }
 
@@ -29,6 +30,7 @@ class UserController extends MainController{
     async verifyLogin(req,res){
         let response = await this.service.loginVerifyUser(req.body);
         if(response.error) return res.status(response.statusCode).send(response.data);
+        res.header('Authorization', response.token);
         return res.status(response.statusCode).send(response.data);
     }
 }

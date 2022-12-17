@@ -1,4 +1,5 @@
 const dbService = require("../../services/db-service");
+const jwt = require("jsonwebtoken");
 const client = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
@@ -54,9 +55,12 @@ class UserService extends dbService {
             });
             let saveUser = await user.save();
             if (saveUser) {
+              const token = await this.createAuthToken(saveUser);
+              delete saveUser.tokens;
               result = {
                 message: "user saved successfully",
                 user: saveUser,
+                token
               };
             } else {
               result = {
@@ -113,36 +117,38 @@ class UserService extends dbService {
     let result = null;
     try {
       await client.verify
-      .services(process.env.TWILIO_SERVICE_ID)
-      .verificationChecks.create({
-        to: `+${user.phone}`,
-        code: user.code,
-      })
-      .then(async (data) => {
-        if (data.status === "approved") {
-          let verifiedUser = await this.model.findOne({ phone: user.phone });
-          if (verifiedUser) {
-            verifiedUser.lastLoginTime = Date.now();
-            verifiedUser.save();
-            result = {
-              statusCode: 202,
-              data: verifiedUser,
-            };
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verificationChecks.create({
+          to: `+${user.phone}`,
+          code: user.code,
+        })
+        .then(async (data) => {
+          if (data.status === "approved") {
+            let verifiedUser = await this.model.findOne({ phone: user.phone });
+            if (verifiedUser) {
+              const token = await this.createAuthToken(verifiedUser);
+              verifiedUser.lastLoginTime = Date.now();
+              verifiedUser.save();
+              result = {
+                statusCode: 202,
+                data: verifiedUser,
+                token
+              };
+            } else {
+              result = {
+                statusCode: 500,
+                data: "Something went wrong please try again!!",
+              };
+            }
           } else {
             result = {
-              statusCode: 500,
-              data: "Something went wrong please try again!!",
+              error: true,
+              statusCode: 400,
+              data: "Invalid code!!",
             };
           }
-        } else {
-          result = {
-            error: true,
-            statusCode: 400,
-            data: "Invalid code!!",
-          };
-        }
-      });
-    return result;
+        });
+      return result;
     } catch (error) {
       return (result = {
         statusCode: error.status,
@@ -150,7 +156,20 @@ class UserService extends dbService {
         data: "Not found",
       });
     }
-   
+  }
+
+  async createAuthToken(user) {
+    const token = jwt.sign(
+      { _id: user._id.toString() },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2h",
+      }
+    );
+    let User = await this.model.findOne({ _id: user._id });
+    User.tokens = User.tokens.concat({ token });
+    await User.save();
+    return token;
   }
 }
 

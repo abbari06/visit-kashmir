@@ -30,6 +30,14 @@ class User {
         lastLoginTime: {
           type: Date,
         },
+        tokens: [
+          {
+            token: {
+              type: String,
+              required: true,
+            },
+          },
+        ],
       },
       {
         timestamps: true,
@@ -37,6 +45,12 @@ class User {
     );
     UserShema.plugin(mongoosePaginate);
     UserShema.plugin(autoIncrement.plugin, { model: "users", field: "_id" });
+    UserShema.methods.toJSON =  function () {
+      const user = this
+      const userObj = user.toObject();
+      delete userObj.tokens
+      return userObj
+  }
     mongoose.models.users || mongoose.model("users", UserShema);
   }
   getInstance() {
