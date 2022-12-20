@@ -10,19 +10,22 @@ class RecommendationService extends dbService {
     super(model);
   }
   async recommendationOnboardingData(body) {
-    // const keys = [
-    //   "attractions",
-    //   "foodplaces",
-    //   "events",
-    //   "recreationalActivities",
-    // ];
+    const days = {
+      0:"sunday",
+      1:"monday",
+      2:"tuesday",
+      3:"wednesday",
+      4:"thursday",
+      5:"friday",
+      6:"saturday"
+    };
     var placeId;
     var stayPlaceId = -1;
     const data = {};
     const query = body.query;
     var startSlot;
     var endSlot;
-    const arrivalDate = new Date(body.query.arrivalDate);
+    
     const slot = PropertyReader.getProperty("SLOT");
     const hotelCheckInTime = PropertyReader.getProperty("HOTEL_CHECKIN");
     const arrivalToHotelTime = PropertyReader.getProperty("ARRIVAL_TO_HOTEL");
@@ -35,11 +38,16 @@ class RecommendationService extends dbService {
     let hh = 0;
     let mm = 0;
     try {
+      
       for (let i of body.itineraryForm) {
+        const arrivalDate = new Date(body.query.arrivalDate);
         let obj = {};
         const currentDate = arrivalDate.setDate(
-          arrivalDate.getDate() + i.day - 1
+          arrivalDate.getDate()+ i.day - 1
         );
+        console.log(new Date(currentDate), new Date(currentDate).getDay());
+        let day=new Date(currentDate).getDay();
+        query.day=days[day];
         query.currentDate = currentDate;
         if (i.trigger == "visit") {
           placeId = i.action;
@@ -79,8 +87,9 @@ class RecommendationService extends dbService {
             data[day] = obj;
           }
         } else {
-          //only for arrival once
+          //only for arrival and departure
           if (i.trigger == "departure") {
+            placeId=i.action;
             [hh, mm] = i.departureTime.split(":").map((x) => parseInt(x));
           
             var d = new Date(arrivalDate).setHours(hh,mm);
@@ -89,7 +98,6 @@ class RecommendationService extends dbService {
             startSlot = visitStartSLot;
             const isSlot = await this.getSlots(endSlot, startSlot, slot);
             if (isSlot) {
-               console.log(startSlot,endSlot);
               query.startSlotTime = startSlot;
               query.endSlotTime = endSlot;
               obj = await this.getRecommendations(placeId, query);
@@ -138,7 +146,6 @@ class RecommendationService extends dbService {
     let [shh, smm] = startSlot.split(":").map((x) => parseInt(x));
     ehh = ehh + emm / 100;
     shh = shh + smm / 100;
-    console.log(ehh,shh);
     if (ehh - shh >= slot) {
       return true;
     }

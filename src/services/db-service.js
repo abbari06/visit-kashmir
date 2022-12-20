@@ -35,23 +35,22 @@ class dbService {
     if (body.filter) {
       query = queryBuilder(body.filter);
     }
-    let obj={};
+    let obj = {};
     try {
-       obj=await this.model.paginate({ $and: query }, { offset, limit })
-      return{
+      obj = await this.model.paginate({ $and: query }, { offset, limit });
+      return {
         error: false,
         statusCode: 202,
-      data:obj.docs,
-      totalDocs:obj.totalDocs,
-      offset:obj.offset,
-      limit:obj.limit,
-      totalPages:obj.totalPages,
-      page:obj.page,
-      pagingCounter:obj.pagingCounter,
-      hasNextPage:obj.hasNextPage,
-      hasPrevPage:obj.hasPrevPage
-      }
-      
+        data: obj.docs,
+        totalDocs: obj.totalDocs,
+        offset: obj.offset,
+        limit: obj.limit,
+        totalPages: obj.totalPages,
+        page: obj.page,
+        pagingCounter: obj.pagingCounter,
+        hasNextPage: obj.hasNextPage,
+        hasPrevPage: obj.hasPrevPage,
+      };
     } catch (error) {
       return {
         error: true,
@@ -67,16 +66,16 @@ class dbService {
       let item = await this.model.findByIdAndUpdate(_id, data, {
         returnOriginal: false,
       });
-      if(item){
+      if (item) {
         return {
-          statusCode:200,
-          data:item
-        }
-      }else{
+          statusCode: 200,
+          data: item,
+        };
+      } else {
         return {
-          statusCode:404,
-          data:"Not found"
-        }
+          statusCode: 404,
+          data: "Not found",
+        };
       }
     } catch (error) {
       return {
@@ -95,7 +94,7 @@ class dbService {
         return {
           error: false,
           statusCode: 201,
-          data:item,
+          data: item,
         };
       } else {
         return {
@@ -154,7 +153,7 @@ class dbService {
       return {
         error: false,
         statusCode: 202,
-        data:item,
+        data: item,
       };
     } catch (error) {
       return {
@@ -184,7 +183,7 @@ class dbService {
       return {
         error: false,
         statusCode: 202,
-       data: item,
+        data: item,
       };
     } catch (error) {
       return {
@@ -225,7 +224,6 @@ class dbService {
 
   async recommendation(id, queryy) {
     const query = queryBuilder(queryy, id);
-   //console.log(query);
     try {
       return await this.model.find({ $and: query });
     } catch (error) {
@@ -234,11 +232,10 @@ class dbService {
       };
     }
   }
-
   async getTopThree() {
     try {
       const item = await this.model.find().sort({ rating: -1 }).limit(3);
-      return { error: false, statusCode: 202, data:item };
+      return { error: false, statusCode: 202, data: item };
     } catch (error) {
       return {
         message: error.errmsg || "Something went wrong",
@@ -277,9 +274,9 @@ const queryBuilder = (data, id) => {
     //   },
     // },
   ];
-    query.push({
-      placeId: id,
-    });
+  query.push({
+    placeId: id,
+  });
   query.push({
     deletedFlag: false,
   });
@@ -288,54 +285,49 @@ const queryBuilder = (data, id) => {
       query.push({
         [key]: { $in: value },
       });
-    } 
-    else if (key == "startingHrs") {
+    } else if (key == "startingHrs") {
       query.push({
         [key]: { $gte: value },
       });
-    } 
-    else if (key == "endingHrs") {
+    } else if (key == "endingHrs") {
       query.push({
         [key]: { $lte: value },
       });
-    } 
-    else if (key == "name") {
+    } else if (key == "day") {
+      query.push({
+        closingDays: { $nin: value },
+      });
+      console.log(query);
+    } else if (key == "name") {
       query.push({
         [key]: { $regex: value },
       });
-    } 
-    else if (key == "interests") {
+    } else if (key == "interests") {
       query.push({
         category: { $in: value },
       });
-    } 
-    else if(key=="departureDate"){
+    } else if (key == "departureDate") {
       query.push({
         startDate: { $lte: new Date(value) },
       });
-    }
-     else if (key == "arrivalDate") {
-        query.push({
-          endDate: { $gte: new Date(value) },
-        });
-      }
-    else if (key == "currentDate") {
+    } else if (key == "arrivalDate") {
       query.push({
         endDate: { $gte: new Date(value) },
-        startDate:{$lte:new Date(value)}
       });
-   } 
-     else if (key == "startSlotTime") {
+    } else if (key == "currentDate") {
+      query.push({
+        endDate: { $gte: new Date(value) },
+        startDate: { $lte: new Date(value) },
+      });
+    } else if (key == "startSlotTime") {
       query.push({
         endingHrs: { $gte: value },
       });
-    } 
-    else if (key == "endSlotTime") {
+    } else if (key == "endSlotTime") {
       query.push({
         startingHrs: { $lte: value },
       });
-    } 
-    else {
+    } else {
       query.push({
         [key]: value,
       });
