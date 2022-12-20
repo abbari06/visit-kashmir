@@ -60,7 +60,6 @@ class dbService {
       };
     }
   }
-
   async update(_id, data) {
     try {
       let item = await this.model.findByIdAndUpdate(_id, data, {
