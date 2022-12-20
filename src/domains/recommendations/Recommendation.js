@@ -12,7 +12,7 @@ class Recommendation {
           type: Number,
           required: true,
         },
-        userRecommendations: {
+        data: {
           type: [],
         },
         expiryDate: {

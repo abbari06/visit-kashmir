@@ -85,7 +85,6 @@ class RecommendationService extends dbService {
           
             var d = new Date(arrivalDate).setHours(hh,mm);
             d = new Date(new Date(d).getTime() - (airportCheckInTime*60*60000));
-            //console.log("New DATETIME after ", new Date(d).toTimeString().split(" ")[0]);
             endSlot = new Date(d).toTimeString().split(" ")[0];
             startSlot = visitStartSLot;
             const isSlot = await this.getSlots(endSlot, startSlot, slot);
@@ -162,11 +161,6 @@ class RecommendationService extends dbService {
 
   async saveUserRecommendation(body) {
     try {
-      let UserRecommendation = await this.model.findOne({
-        userId: body.userId,
-      });
-      if (!UserRecommendation) {
-        try {
           let newUserRecommendation = await this.model.create(body);
           if (newUserRecommendation) {
             return {
@@ -181,34 +175,11 @@ class RecommendationService extends dbService {
             errors: error.errors,
           };
         }
-      } else {
-        if (body.userRecommendations != null) {
-          let userRecommendations = await this.model.updateOne(
-            { userId: body.userId },
-            {
-              $push: {
-                userRecommendations: { $each: body.userRecommendations },
-              },
-            }
-          );
-          return {
-            data: "Recommendation updated successfully",
-          };
-        }
-      }
-    } catch (error) {
-      return {
-        error: true,
-        statusCode: 500,
-        message: error.errmsg || "Not able to create",
-        errors: error.errors,
-      };
-    }
-  }
+    } 
 
   async getUserRecommendation(body) {
     try {
-      let recommendations = await this.model.findOne({ userId: body.userId });
+      let recommendations = await this.model.find({ userId: body.userId });
       if (recommendations) {
         return {
           data: recommendations,
