@@ -296,7 +296,6 @@ const queryBuilder = (data, id) => {
       query.push({
         closingDays: { $nin: value },
       });
-      console.log(query);
     } else if (key == "name") {
       query.push({
         [key]: { $regex: value },

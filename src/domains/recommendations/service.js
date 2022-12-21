@@ -45,9 +45,8 @@ class RecommendationService extends dbService {
         const currentDate = arrivalDate.setDate(
           arrivalDate.getDate()+ i.day - 1
         );
-        console.log(new Date(currentDate), new Date(currentDate).getDay());
-        let day=new Date(currentDate).getDay();
-        query.day=days[day];
+        let currentDay=new Date(currentDate).getDay();
+        query.day=days[currentDay];
         query.currentDate = currentDate;
         if (i.trigger == "visit") {
           placeId = i.action;
