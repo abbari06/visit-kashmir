@@ -222,9 +222,11 @@ class dbService {
   }
 
   async recommendation(id, queryy) {
-    const query = queryBuilder(queryy, id);
+
+    const place=await this.model.findOne({id:id});
+    const query = queryBuilder(queryy, id,place.coordinates.coordinates);
     try {
-      return await this.model.find({ $and: query });
+      return await this.model.find({ $and: query }).sort({rating: -1});
     } catch (error) {
       return {
         message: error.errmsg || "Something went wrong",
@@ -258,20 +260,19 @@ class dbService {
   }
 }
 
-const queryBuilder = (data, id) => {
-  // query = [{ deletedFlag: false }];
+const queryBuilder = (data, id,coordinates) => {
   var query = [
-    // {
-    //   coordinates: {
-    //     $near: {
-    //       $geometry: {
-    //         type: "Point",
-    //         coordinates: [74.809036, 34.069832],
-    //       },
-    //       $maxDistance: 400000,
-    //     },
-    //   },
-    // },
+    {
+      coordinates: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates:[coordinates[0],coordinates[1]],
+          },
+          $maxDistance: 400000,
+        },
+      },
+    },
   ];
   query.push({
     placeId: id,
