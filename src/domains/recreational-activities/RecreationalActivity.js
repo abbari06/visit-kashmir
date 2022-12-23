@@ -57,7 +57,7 @@ class RecreationalActivity {
     RecreationalActivitySchema.plugin(mongoosePaginate);
     RecreationalActivitySchema.plugin(autoIncrement.plugin, {
       model: "recreationalActivities",
-      field: "_id",
+      field: "_id",startAt:1
     });
     RecreationalActivitySchema.index({ coordinates: "2dsphere" });
     mongoose.models.recreationalActivities || mongoose.model("recreationalActivities", RecreationalActivitySchema);

@@ -86,7 +86,7 @@ class FoodPlace {
       timestamps:true
     });
     FoodPlaceShema.plugin(mongoosePaginate);
-    FoodPlaceShema.plugin(autoIncrement.plugin, { model: "fooodplaces", field: "_id" });
+    FoodPlaceShema.plugin(autoIncrement.plugin, { model: "fooodplaces", field: "_id" ,startAt:1});
     FoodPlaceShema.index({ coordinates: "2dsphere" })
     mongoose.models.foodplaces || mongoose.model("foodplaces", FoodPlaceShema);
   }

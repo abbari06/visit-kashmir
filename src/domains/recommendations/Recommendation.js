@@ -25,7 +25,7 @@ class Recommendation {
     );
     RecommendationSchema.plugin(autoIncrement.plugin, {
       model: "Recommendations",
-      field: "_id",
+      field: "_id",startAt:1
     });
     mongoose.model("Recommendations", RecommendationSchema);
   }

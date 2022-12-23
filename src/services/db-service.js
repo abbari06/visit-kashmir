@@ -220,9 +220,7 @@ class dbService {
       };
     }
   }
-
   async recommendation(id, queryy) {
-    
     const query = queryBuilder(queryy, id);
     try {
       return await this.model.find({ $and: query }).sort({rating: -1});
@@ -242,7 +240,6 @@ class dbService {
       };
     }
   }
-
   async masterSearch(body) {
     let query = [{ deletedFlag: false }];
     if (body.filter) {

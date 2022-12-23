@@ -54,7 +54,7 @@ class Attraction {
         timestamps:true
       });
       AttractionSchema.plugin(mongoosePaginate);
-      AttractionSchema.plugin(autoIncrement.plugin, { model: "Attraction", field: "_id" });
+      AttractionSchema.plugin(autoIncrement.plugin, { model: "Attraction", field: "_id" ,startAt:1});
       AttractionSchema.index({ coordinates: "2dsphere" })
       mongoose.models.Attraction || mongoose.model("Attraction", AttractionSchema);
     }

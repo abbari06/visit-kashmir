@@ -54,7 +54,7 @@ class Event {
       timestamps:true
     });
     EventSchema.plugin(mongoosePaginate);
-    EventSchema.plugin(autoIncrement.plugin, { model: "events", field: "_id" });
+    EventSchema.plugin(autoIncrement.plugin, { model: "events", field: "_id" ,startAt:1});
     EventSchema.index({ coordinates: "2dsphere" })
     mongoose.models.events ||  mongoose.model("events", EventSchema);
   }

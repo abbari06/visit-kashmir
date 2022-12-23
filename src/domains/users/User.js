@@ -44,7 +44,7 @@ class User {
       }
     );
     UserShema.plugin(mongoosePaginate);
-    UserShema.plugin(autoIncrement.plugin, { model: "users", field: "_id" });
+    UserShema.plugin(autoIncrement.plugin, { model: "users", field: "_id" ,startAt:1});
     UserShema.methods.toJSON =  function () {
       const user = this
       const userObj = user.toObject();
