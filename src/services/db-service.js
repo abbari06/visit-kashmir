@@ -222,9 +222,8 @@ class dbService {
   }
 
   async recommendation(id, queryy) {
-
-    const place=await this.model.findOne({id:id});
-    const query = queryBuilder(queryy, id,place.coordinates.coordinates);
+    
+    const query = queryBuilder(queryy, id);
     try {
       return await this.model.find({ $and: query }).sort({rating: -1});
     } catch (error) {
@@ -260,19 +259,8 @@ class dbService {
   }
 }
 
-const queryBuilder = (data, id,coordinates) => {
+const queryBuilder = (data, id) => {
   var query = [
-    {
-      coordinates: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates:[coordinates[0],coordinates[1]],
-          },
-          $maxDistance: 400000,
-        },
-      },
-    },
   ];
   query.push({
     placeId: id,

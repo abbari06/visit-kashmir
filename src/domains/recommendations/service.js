@@ -5,6 +5,9 @@ const FoodPlaceController = require("../food-places/controller");
 const RecreationalActivityController = require("../recreational-activities/controller");
 const PropertyReader = require("../../property-reader");
 const propertyReader = require("../../property-reader");
+const Place=require("../places/Place");
+const placeService=require("../places/service");
+const PlaceService=new placeService(new Place().getInstance());
 class RecommendationService extends dbService {
   constructor(model) {
     super(model);
@@ -60,6 +63,7 @@ class RecommendationService extends dbService {
           if (isSlot) {
             query.startSlotTime = startSlot;
             query.endSlotTime = endSlot;
+            await this.setCoordinates(placeId,query);
             obj = await this.getRecommendations(placeId, query);
             const day = `${i.day}`;
             if (stayPlaceId > -1 && stayPlaceId != placeId) {
@@ -73,6 +77,7 @@ class RecommendationService extends dbService {
                 query.startSlotTime = startSlot;
                 query.endSlotTime = endSlot;
                 const stayRecommendation = [];
+                await this.setCoordinates(stayPlaceId,query);
                 stayRecommendation.push(
                   await this.getRecommendations(stayPlaceId, query)
                 );
@@ -99,6 +104,7 @@ class RecommendationService extends dbService {
             if (isSlot) {
               query.startSlotTime = startSlot;
               query.endSlotTime = endSlot;
+              await this.setCoordinates(placeId,query);
               obj = await this.getRecommendations(placeId, query);
               const day = `${i.day}`;
               data[day] = obj;
@@ -119,6 +125,7 @@ class RecommendationService extends dbService {
             if (isSlot) {
               query.startSlotTime = startSlot;
               query.endSlotTime = endSlot;
+              await this.setCoordinates(placeId,query);
               obj = await this.getRecommendations(placeId, query);
               const day = `${i.day}`;
               data[day] = obj;
@@ -149,6 +156,19 @@ class RecommendationService extends dbService {
       return true;
     }
     return false;
+  }
+  async setCoordinates(id,query){
+            const place=await PlaceService.getById(id);
+            const coordinates=place.data.coordinates.coordinates;
+            query.coordinates={
+                $near: {
+                  $geometry: {
+                    type: "Point",
+                    coordinates:[coordinates[0],coordinates[1]],
+                  },
+                  $maxDistance: 400000,
+                },
+            }
   }
   async getRecommendations(placeId, query) {
     const attractions = await AttractionController.getRecommendation(
