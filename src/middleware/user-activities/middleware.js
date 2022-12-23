@@ -1,6 +1,6 @@
 const UserActivities = require("./UserActivities");
 const Activities = new UserActivities().getInstance();
-var ip = require('ip');
+var ip = require("ip");
 class UserActivitiesMiddleware {
   constructor() {}
 
@@ -11,24 +11,14 @@ class UserActivitiesMiddleware {
       res.locals.body = body;
       response = body;
       if (req.body.userId != null) {
-        const UserActivities = await Activities.findOne({
+        req.body.path = req.route.path;
+        await Activities.create({
+          ipaddress: ip.address(),
           userId: req.body.userId,
+          reqData: [req.body],
+          resData: [response],
         });
-        if (UserActivities) {
-          UserActivities.ipaddress = ip.address();
-          UserActivities.reqData.push(req.body);
-          UserActivities.resData.push(response);
-          UserActivities.save();
-        } else {
-          await Activities.create({
-            ipaddress : ip.address(),
-            userId: req.body.userId,
-            reqData: [req.body],
-            resData: [response],
-          });
-        }
       }
-
       return oldJson.call(res, body);
     };
     next();
