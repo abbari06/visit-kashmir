@@ -41,7 +41,7 @@ class Attraction {
             type: Boolean,
           },
           bestTimeToVisit: {
-            type: []
+            type: String
           },
           modeOfBooking: {
             type: []

@@ -41,13 +41,13 @@ class Event {
             type: String,
             required: true,
           },
-          seniorCetizenCompatibility: Boolean,
+          seniorCitizenCompatibility: Boolean,
           petsAllowed: Boolean,
           restroomAvailability: Boolean,
           modeOfBooking: {
             type: [],
           },
-          extras: {
+          extraInfo: {
             type: [],
           },
     },{

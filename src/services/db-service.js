@@ -259,9 +259,11 @@ class dbService {
 const queryBuilder = (data, id) => {
   var query = [
   ];
-  query.push({
-    placeId: id,
-  });
+  if(id!=null){
+    query.push({
+      placeId: id,
+    });
+  }
   query.push({
     deletedFlag: false,
   });
@@ -317,6 +319,7 @@ const queryBuilder = (data, id) => {
       });
     }
   }
+  console.log(query)
   return query;
 };
 const getPagination = (page, size) => {
