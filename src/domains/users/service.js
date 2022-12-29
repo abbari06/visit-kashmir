@@ -14,6 +14,7 @@ class UserService extends dbService {
       if (user) {
         return {
           message: "user is already registered!",
+          statusCode:403
         };
       } else {
         let response = null;
@@ -28,6 +29,7 @@ class UserService extends dbService {
           });
         return {
           message: "Verification code has been sent successfully",
+          statusCode:202,
           response,
         };
       }
