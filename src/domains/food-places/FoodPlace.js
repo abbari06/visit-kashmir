@@ -36,7 +36,6 @@ class FoodPlace {
           },
           closingDays:{
             type:[String],
-            enum:["saturday","sunday"]
           },
           menuLinks:[],
           knownFor:[],
