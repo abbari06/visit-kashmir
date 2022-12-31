@@ -6,8 +6,8 @@ const service = new RecreationActivityService(new RecreationalActivity().getInst
 
 class RecreationalActivityController extends MainController {
   constructor(service) {
-    super(service); 
-  }
+    super(service);  
+  } 
 }
 
 module.exports = new RecreationalActivityController(service);
