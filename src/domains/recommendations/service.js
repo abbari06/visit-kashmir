@@ -95,7 +95,6 @@ class RecommendationService extends dbService {
           if (i.trigger == "departure") {
             placeId=i.action;
             [hh, mm] = i.departureTime.split(":").map((x) => parseInt(x));
-          
             var d = new Date(arrivalDate).setHours(hh,mm);
             d = new Date(new Date(d).getTime() - (airportCheckInTime*60*60000));
             endSlot = new Date(d).toTimeString().split(" ")[0];
