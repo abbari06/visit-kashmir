@@ -21,7 +21,7 @@
     "mongoose-extend-schema": "^1.0.0",
     "mongoose-paginate-v2": "^1.7.1",
     "properties-reader": "^2.2.0",
-    "twilio": "^2.5.2"
+    "twilio": "^3.84.0"
   },
   "devDependencies": {
     "env-cmd": "^8.0.2",

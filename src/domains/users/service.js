@@ -90,6 +90,7 @@ class UserService extends dbService {
   }
 
   async loginUser(user) {
+    console.log(process.env.TWILIO_SERVICE_ID)
     let User = await this.model.findOne({ phone: user.phone });
     if (!User) {
       return {
