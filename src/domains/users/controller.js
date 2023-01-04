@@ -12,7 +12,8 @@ class UserController extends MainController{
      async register(req,res){
         let response = await this.service.registerUser(req.body);
         if (response.error) return res.status(response.statusCode).send(response);
-        return res.status(202).send(response);
+        console.log(response.statusCode)
+        return res.status(response.statusCode).send(response.message);
     }
     async verify(req,res){
         let response = await this.service.verifyUser(req.body);

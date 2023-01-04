@@ -14,6 +14,7 @@ class UserService extends dbService {
       if (user) {
         return {
           message: "user is already registered!",
+          statusCode:403
         };
       } else {
         let response = null;
@@ -28,6 +29,7 @@ class UserService extends dbService {
           });
         return {
           message: "Verification code has been sent successfully",
+          statusCode:202,
           response,
         };
       }
@@ -88,6 +90,7 @@ class UserService extends dbService {
   }
 
   async loginUser(user) {
+    console.log(process.env.TWILIO_SERVICE_ID)
     let User = await this.model.findOne({ phone: user.phone });
     if (!User) {
       return {

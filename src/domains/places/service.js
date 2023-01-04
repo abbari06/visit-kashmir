@@ -21,11 +21,9 @@ class PlaceService extends dbService {
 
   async getPlaceNameAndId(){
     try {
-      const result = await this.model.find().select("name _id");
+      const data = await this.model.find().select("name _id");
       return  {
-        error:false,
-        statusCode:202,
-        result
+        data
       };
     } catch (error) {
       return{

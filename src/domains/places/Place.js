@@ -21,7 +21,6 @@ class Place {
       },
       thingsToDo: {
         type: [],
-        required: true,
       },
       reviewLinks: {
         type: [],
