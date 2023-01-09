@@ -13,6 +13,46 @@ class RecommendationService extends dbService {
     super(model);
   }
   async recommendationOnboardingData(body) {
+    if(!body.itineraryForm){
+      const range=new Date(body.query.departureDate)-((new Date(body.query.arrivalDate)));
+      const places=await PlaceService.getPlaceNameAndId();
+      const totalPlaces=places.result.length;
+      const totalDays=parseInt((range)/(1000 * 60 * 60 * 24))+1;
+      //console.log(days);
+      let itineraryForm=[];
+      let check=false;
+      for(let i=0;i<totalDays;i++){
+        if(i==0 && !check){
+          check=true;
+          itineraryForm.push( {
+            "day": i+1,
+            "arrivalTime":"09:05",
+            "trigger": "arrival",
+            "action": places.result[i%totalPlaces]._id,
+            "stay": true
+        },);
+        }else{
+          if(i==totalDays-1){
+            itineraryForm.push( {
+              "day": i+1,
+              "trigger": "departure",
+              "departureTime":"14:00",
+              "action": places.result[i%totalPlaces]._id,
+              "stay": false
+          },);
+          }else{
+            itineraryForm.push( {
+              "day": i+1,
+              "trigger": "visit",
+              "action": places.result[i%totalPlaces]._id,
+              "stay": false
+          },);
+          }
+        }
+      }
+    body['itineraryForm']=itineraryForm;
+    console.log(body);
+    }
     const days = {
       0:"sunday",
       1:"monday",
@@ -44,7 +84,12 @@ class RecommendationService extends dbService {
       
       for (let i of body.itineraryForm) {
         const arrivalDate = new Date(body.query.arrivalDate);
-        let obj = {};
+        let obj = {
+          "attractions":[],
+          "foodplaces": [],
+            "events": [],
+            "recreationalActivities": []
+      };
         const currentDate = arrivalDate.setDate(
           arrivalDate.getDate()+ i.day - 1
         );
@@ -105,9 +150,10 @@ class RecommendationService extends dbService {
               query.endSlotTime = endSlot;
               await this.setCoordinates(placeId,query);
               obj = await this.getRecommendations(placeId, query);
-              const day = `${i.day}`;
-              data[day] = obj;
             }
+            const day = `${i.day}`;
+            console.log(obj);
+            data[day] = obj;
           } else {
             placeId = i.action;
             endSlot = dayEndTime;
@@ -132,6 +178,7 @@ class RecommendationService extends dbService {
           }
         }
       }
+      console.log(data);
       return {
         error: false,
         statusCode: 202,
