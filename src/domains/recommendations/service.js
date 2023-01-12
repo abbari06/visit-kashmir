@@ -8,6 +8,9 @@ const propertyReader = require("../../property-reader");
 const Place=require("../places/Place");
 const placeService=require("../places/service");
 const PlaceService=new placeService(new Place().getInstance());
+const Plan=require("../plans/plan");
+const planService=require("../plans/service");
+const PlanService=new planService(new Plan().getInstance());
 class RecommendationService extends dbService {
   constructor(model) {
     super(model);
@@ -15,42 +18,44 @@ class RecommendationService extends dbService {
   async recommendationOnboardingData(body) {
     if(!body.itineraryForm){
       const range=new Date(body.query.departureDate)-((new Date(body.query.arrivalDate)));
-      const places=await PlaceService.getPlaceNameAndId();
-      const totalPlaces=places.result.length;
+      // const places=await PlaceService.getPlaceNameAndId();
+      // console.log(places);
+      // const totalPlaces=places.data.length;
       const totalDays=parseInt((range)/(1000 * 60 * 60 * 24))+1;
-      //console.log(days);
-      let itineraryForm=[];
-      let check=false;
-      for(let i=0;i<totalDays;i++){
-        if(i==0 && !check){
-          check=true;
-          itineraryForm.push( {
-            "day": i+1,
-            "arrivalTime":"09:05",
-            "trigger": "arrival",
-            "action": places.result[i%totalPlaces]._id,
-            "stay": true
-        },);
-        }else{
-          if(i==totalDays-1){
-            itineraryForm.push( {
-              "day": i+1,
-              "trigger": "departure",
-              "departureTime":"14:00",
-              "action": places.result[i%totalPlaces]._id,
-              "stay": false
-          },);
-          }else{
-            itineraryForm.push( {
-              "day": i+1,
-              "trigger": "visit",
-              "action": places.result[i%totalPlaces]._id,
-              "stay": false
-          },);
-          }
-        }
-      }
-    body['itineraryForm']=itineraryForm;
+      const plans=await PlanService.getPlanByDays(totalDays);
+      console.log(plans);
+      // let itineraryForm=[];
+      // let check=false;
+      // for(let i=0;i<totalDays;i++){
+      //   if(i==0 && !check){
+      //     check=true;
+      //     itineraryForm.push( {
+      //       "day": i+1,
+      //       "arrivalTime":"09:05",
+      //       "trigger": "arrival",
+      //       "action": places.data[i%totalPlaces]._id,
+      //       "stay": true
+      //   },);
+      //   }else{
+      //     if(i==totalDays-1){
+      //       itineraryForm.push( {
+      //         "day": i+1,
+      //         "trigger": "departure",
+      //         "departureTime":"14:00",
+      //         "action": places.data[i%totalPlaces]._id,
+      //         "stay": false
+      //     },);
+      //     }else{
+      //       itineraryForm.push( {
+      //         "day": i+1,
+      //         "trigger": "visit",
+      //         "action": places.data[i%totalPlaces]._id,
+      //         "stay": false
+      //     },);
+      //     }
+      //   }
+      // }
+    body['itineraryForm']=plans[0].itineraryForm;
     console.log(body);
     }
     const days = {

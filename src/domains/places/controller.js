@@ -9,8 +9,6 @@ class PlaceController extends MainController {
     super(service);
     this.getPlaceByName = this.getPlaceByName.bind(this)
   }
-
-  
   async getPlaceByName(name){
     let place = await this.service.getPlaceByName(name);
     if(place){

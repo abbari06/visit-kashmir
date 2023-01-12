@@ -6,7 +6,6 @@ class MainController {
     autoBind(this);
 
   }
-
   async insert(req, res) {
     let response = await this.service.insert(req.body);
     if (response.error) return res.status(response.statusCode).send(response);
