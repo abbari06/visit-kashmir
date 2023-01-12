@@ -12,7 +12,7 @@ const categories = [
   {"icon": "f81f", "text": "Sports"},
   {"icon": "e53f", "text": "Activities"},
   {"icon": "f1cc", "text": "Shopping"},
-  {"icon": "e56c", "text": "Food Places"},
+  {"icon": "e56c", "text": "FoodPlaces"},
   {"icon": "e798", "text": "Water Falls"},
   {"icon": "e0ad", "text": "Historic Sites"},
   {"icon": "e91d", "text": "Wildlife Areas"},
