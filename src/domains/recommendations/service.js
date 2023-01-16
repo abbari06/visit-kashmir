@@ -207,10 +207,8 @@ class RecommendationService extends dbService {
 
     const data = {};
     data[placeId] = { attractions, foodplaces, events, recreationalActivities };
-    var sampleData = data[placeId];
 
     return data;
-    //return { attractions, foodplaces, events, recreationalActivities };
   }
 
   async saveUserRecommendation(body) {

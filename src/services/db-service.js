@@ -225,16 +225,11 @@ class dbService {
   async recommendation(id, queryy) {
     const query = queryBuilder(queryy, id);
     try {
-      let item=await this.model.find({ $and: query }).sort({rating: -1});
-      // for(let i of item){
-      //   console.log(i.startSlot); 
-      //   // i.startSlot=queryy.startSlotTime;
-      //   // i.endSlot=queryy.endSlotTime;
-      // //   i.push({"startSlot":queryy.startSlotTime});
-      // // i.push({"endSlot":queryy.endSlotTime});
-      // }
-      
-      // //console.log(item);
+      let item=await this.model.find({ $and: query }).sort({rating: -1}).lean();
+      for(let i=0;i<item.length;i++){
+        item[i].startSlot=queryy.startSlotTime;
+        item[i].endSlot=queryy.endSlotTime;     
+      }
       return item
     } catch (error) {
       return {
