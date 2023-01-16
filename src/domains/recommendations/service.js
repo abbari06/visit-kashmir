@@ -5,75 +5,34 @@ const FoodPlaceController = require("../food-places/controller");
 const RecreationalActivityController = require("../recreational-activities/controller");
 const PropertyReader = require("../../property-reader");
 const propertyReader = require("../../property-reader");
-const Place=require("../places/Place");
-const placeService=require("../places/service");
-const PlaceService=new placeService(new Place().getInstance());
-const Plan=require("../plans/plan");
-const planService=require("../plans/service");
-const PlanService=new planService(new Plan().getInstance());
+const Place = require("../places/Place");
+const placeService = require("../places/service");
+const PlaceService = new placeService(new Place().getInstance());
+const Plan = require("../plans/plan");
+const planService = require("../plans/service");
+const PlanService = new planService(new Plan().getInstance());
 class RecommendationService extends dbService {
   constructor(model) {
     super(model);
   }
   async recommendationOnboardingData(body) {
-    if(!body.itineraryForm){
-      const range=new Date(body.query.departureDate)-((new Date(body.query.arrivalDate)));
-      // const places=await PlaceService.getPlaceNameAndId();
-      // console.log(places);
-      // const totalPlaces=places.data.length;
-      const totalDays=parseInt((range)/(1000 * 60 * 60 * 24))+1;
-      const plans=await PlanService.getPlanByDays(totalDays);
-      console.log(plans);
-      // let itineraryForm=[];
-      // let check=false;
-      // for(let i=0;i<totalDays;i++){
-      //   if(i==0 && !check){
-      //     check=true;
-      //     itineraryForm.push( {
-      //       "day": i+1,
-      //       "arrivalTime":"09:05",
-      //       "trigger": "arrival",
-      //       "action": places.data[i%totalPlaces]._id,
-      //       "stay": true
-      //   },);
-      //   }else{
-      //     if(i==totalDays-1){
-      //       itineraryForm.push( {
-      //         "day": i+1,
-      //         "trigger": "departure",
-      //         "departureTime":"14:00",
-      //         "action": places.data[i%totalPlaces]._id,
-      //         "stay": false
-      //     },);
-      //     }else{
-      //       itineraryForm.push( {
-      //         "day": i+1,
-      //         "trigger": "visit",
-      //         "action": places.data[i%totalPlaces]._id,
-      //         "stay": false
-      //     },);
-      //     }
-      //   }
-      // }
-    body['itineraryForm']=plans[0].itineraryForm;
-    console.log(body);
-    }
     const days = {
-      0:"sunday",
-      1:"monday",
-      2:"tuesday",
-      3:"wednesday",
-      4:"thursday",
-      5:"friday",
-      6:"saturday"
+      0: "sunday",
+      1: "monday",
+      2: "tuesday",
+      3: "wednesday",
+      4: "thursday",
+      5: "friday",
+      6: "saturday",
     };
     var placeId;
     var stayPlaceId = -1;
     const data = {};
+
     const query = body.query;
     var startSlot;
     var endSlot;
-    
+
     const slot = PropertyReader.getProperty("SLOT");
     const hotelCheckInTime = PropertyReader.getProperty("HOTEL_CHECKIN");
     const arrivalToHotelTime = PropertyReader.getProperty("ARRIVAL_TO_HOTEL");
@@ -86,21 +45,21 @@ class RecommendationService extends dbService {
     let hh = 0;
     let mm = 0;
     try {
-      
       for (let i of body.itineraryForm) {
         const arrivalDate = new Date(body.query.arrivalDate);
-        let obj = {
-          "attractions":[],
-          "foodplaces": [],
-            "events": [],
-            "recreationalActivities": []
-      };
+        let newDataObj = {
+          attractions: [],
+          foodplaces: [],
+          events: [],
+          recreationalActivities: [],
+        };
         const currentDate = arrivalDate.setDate(
-          arrivalDate.getDate()+ i.day - 1
+          arrivalDate.getDate() + i.day - 1
         );
-        let currentDay=new Date(currentDate).getDay();
-        query.day=days[currentDay];
+        let currentDay = new Date(currentDate).getDay();
+        query.day = days[currentDay];
         query.currentDate = currentDate;
+        let allData = [];
         if (i.trigger == "visit") {
           placeId = i.action;
           endSlot = visitEndSlot;
@@ -109,56 +68,62 @@ class RecommendationService extends dbService {
             endSlot = dayEndTime;
           }
           startSlot = visitStartSLot;
-          const isSlot = await this.getSlots(endSlot, startSlot, slot);
-          if (isSlot) {
-            query.startSlotTime = startSlot;
-            query.endSlotTime = endSlot;
-            await this.setCoordinates(placeId,query);
-            obj = await this.getRecommendations(placeId, query);
-            const day = `${i.day}`;
-            if (stayPlaceId > -1 && stayPlaceId != placeId) {
-              [hh, mm] = visitEndSlot.split(":").map((x) => parseInt(x));
-              hh = hh + slot * arrivalToHotelTime;
-              const tempDate = arrivalDate.setHours(hh, mm);
-              startSlot = new Date(tempDate).toTimeString().split(" ")[0];
-              endSlot = dayEndTime;
-              const isSlot = await this.getSlots(endSlot, startSlot, slot);
-              if (isSlot) {
-                query.startSlotTime = startSlot;
-                query.endSlotTime = endSlot;
-                const stayRecommendation = [];
-                await this.setCoordinates(stayPlaceId,query);
-                stayRecommendation.push(
-                  await this.getRecommendations(stayPlaceId, query)
-                );
-                for (let key of Object.keys(obj)) {
-                  for (let i = 0; i < stayRecommendation[0][key].length; i++) {
-                    obj[key].push(stayRecommendation[0][key][i]);
-                  }
-                }
-              }
-            }
-            data[day] = obj;
-          }
-        } else {
-          //only for arrival and departure
-          if (i.trigger == "departure") {
-            placeId=i.action;
-            [hh, mm] = i.departureTime.split(":").map((x) => parseInt(x));
-            var d = new Date(arrivalDate).setHours(hh,mm);
-            d = new Date(new Date(d).getTime() - (airportCheckInTime*60*60000));
-            endSlot = new Date(d).toTimeString().split(" ")[0];
-            startSlot = visitStartSLot;
+          query.startSlotTime = startSlot;
+          query.endSlotTime = endSlot;
+          await this.setCoordinates(placeId, query);
+          let newDataObjForVisitPlaces = newDataObj;
+          newDataObjForVisitPlaces = await this.getRecommendations(
+            placeId,
+            query
+          );
+          allData.push(newDataObjForVisitPlaces);
+          const day = `${i.day}`;
+          if (stayPlaceId > -1 && stayPlaceId != placeId) {
+            [hh, mm] = visitEndSlot.split(":").map((x) => parseInt(x));
+            hh = hh + slot * arrivalToHotelTime;
+            const tempDate = arrivalDate.setHours(hh, mm);
+            startSlot = new Date(tempDate).toTimeString().split(" ")[0];
+            endSlot = dayEndTime;
             const isSlot = await this.getSlots(endSlot, startSlot, slot);
             if (isSlot) {
               query.startSlotTime = startSlot;
               query.endSlotTime = endSlot;
-              await this.setCoordinates(placeId,query);
-              obj = await this.getRecommendations(placeId, query);
+              const stayRecommendation = [];
+              await this.setCoordinates(stayPlaceId, query);
+              let newDataObjForStayPlaces = newDataObj;
+              newDataObjForStayPlaces = await this.getRecommendations(
+                stayPlaceId,
+                query
+              );
+              allData.push(newDataObjForStayPlaces);
+            }
+          }
+          data[day] = allData;
+        } else {
+          //only for arrival and departure
+          if (i.trigger == "departure") {
+            placeId = i.action;
+            [hh, mm] = i.departureTime.split(":").map((x) => parseInt(x));
+            var d = new Date(arrivalDate).setHours(hh, mm);
+            d = new Date(
+              new Date(d).getTime() - airportCheckInTime * 60 * 60000
+            );
+            endSlot = new Date(d).toTimeString().split(" ")[0];
+            startSlot = visitStartSLot;
+            const isSlot = await this.getSlots(endSlot, startSlot, slot);
+            let newDataObjForDeparturePlace = newDataObj;
+            if (isSlot) {
+              query.startSlotTime = startSlot;
+              query.endSlotTime = endSlot;
+              await this.setCoordinates(placeId, query);
+              newDataObjForDeparturePlace = await this.getRecommendations(
+                placeId,
+                query
+              );
             }
             const day = `${i.day}`;
-            console.log(obj);
-            data[day] = obj;
+            allData.push(newDataObjForDeparturePlace);
+            data[day] = allData;
           } else {
             placeId = i.action;
             endSlot = dayEndTime;
@@ -172,24 +137,30 @@ class RecommendationService extends dbService {
             const tempDate = arrivalDate.setHours(hh, mm);
             startSlot = new Date(tempDate).toTimeString().split(" ")[0];
             const isSlot = await this.getSlots(endSlot, startSlot, slot);
+            let newDataObjForArrivalPlace = newDataObj;
             if (isSlot) {
               query.startSlotTime = startSlot;
               query.endSlotTime = endSlot;
-              await this.setCoordinates(placeId,query);
-              obj = await this.getRecommendations(placeId, query);
+              await this.setCoordinates(placeId, query);
+              newDataObjForArrivalPlace = await this.getRecommendations(
+                placeId,
+                query
+              );
               const day = `${i.day}`;
-              data[day] = obj;
+              allData.push(newDataObjForArrivalPlace);
+              data[day] = allData;
             }
           }
         }
       }
-      console.log(data);
+      //console.log("Response ",data);
       return {
         error: false,
         statusCode: 202,
         data,
       };
     } catch (error) {
+      console.log(error);
       return {
         error: true,
         statusCode: 500,
@@ -208,18 +179,18 @@ class RecommendationService extends dbService {
     }
     return false;
   }
-  async setCoordinates(id,query){
-            const place=await PlaceService.getById(id);
-            const coordinates=place.data.coordinates.coordinates;
-            query.coordinates={
-                $near: {
-                  $geometry: {
-                    type: "Point",
-                    coordinates:[coordinates[0],coordinates[1]],
-                  },
-                  $maxDistance: 400000,
-                },
-            }
+  async setCoordinates(id, query) {
+    const place = await PlaceService.getById(id);
+    const coordinates = place.data.coordinates.coordinates;
+    query.coordinates = {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [coordinates[0], coordinates[1]],
+        },
+        $maxDistance: 400000,
+      },
+    };
   }
   async getRecommendations(placeId, query) {
     const attractions = await AttractionController.getRecommendation(
@@ -233,26 +204,32 @@ class RecommendationService extends dbService {
     const events = await EventController.getRecommendation(placeId, query);
     const recreationalActivities =
       await RecreationalActivityController.getRecommendation(placeId, query);
-    return { attractions, foodplaces, events, recreationalActivities };
+
+    const data = {};
+    data[placeId] = { attractions, foodplaces, events, recreationalActivities };
+    var sampleData = data[placeId];
+
+    return data;
+    //return { attractions, foodplaces, events, recreationalActivities };
   }
 
   async saveUserRecommendation(body) {
     try {
-          let newUserRecommendation = await this.model.create(body);
-          if (newUserRecommendation) {
-            return {
-              data: newUserRecommendation,
-            };
-          }
-        } catch (error) {
-          return {
-            error: true,
-            statusCode: 500,
-            message: error.errmsg || "Not able to create",
-            errors: error.errors,
-          };
-        }
-    } 
+      let newUserRecommendation = await this.model.create(body);
+      if (newUserRecommendation) {
+        return {
+          data: newUserRecommendation,
+        };
+      }
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 500,
+        message: error.errmsg || "Not able to create",
+        errors: error.errors,
+      };
+    }
+  }
 
   async getUserRecommendation(body) {
     try {

@@ -29,6 +29,7 @@ class dbService {
   async list(body) {
     var limit = body.limit || 10;
     var page = body.page || 0;
+    var sort=body.sort;
     const offset = getPagination(page, limit);
     var query = [{ deletedFlag: false }];
 
@@ -37,7 +38,7 @@ class dbService {
     }
     let obj = {};
     try {
-      obj = await this.model.paginate({ $and: query }, { offset, limit });
+      obj = await this.model.paginate({ $and: query }, { offset, limit,sort });
       return {
         error: false,
         statusCode: 202,
@@ -52,6 +53,7 @@ class dbService {
         hasPrevPage: obj.hasPrevPage,
       };
     } catch (error) {
+      console.log(error);
       return {
         error: true,
         statusCode: 500,
@@ -223,16 +225,26 @@ class dbService {
   async recommendation(id, queryy) {
     const query = queryBuilder(queryy, id);
     try {
-      return await this.model.find({ $and: query }).sort({rating: -1});
+      let item=await this.model.find({ $and: query }).sort({rating: -1});
+      // for(let i of item){
+      //   console.log(i.startSlot); 
+      //   // i.startSlot=queryy.startSlotTime;
+      //   // i.endSlot=queryy.endSlotTime;
+      // //   i.push({"startSlot":queryy.startSlotTime});
+      // // i.push({"endSlot":queryy.endSlotTime});
+      // }
+      
+      // //console.log(item);
+      return item
     } catch (error) {
       return {
         message: error.errmsg || "Something went wrong",
       };
     }
   }
-  async getTopThree() {
+  async getTop() {
     try {
-      const item = await this.model.find().sort({ rating: -1 }).limit(3);
+      const item = await this.model.find().sort({ rating: -1 });
       return { error: false, statusCode: 202, data: item };
     } catch (error) {
       return {
@@ -319,7 +331,7 @@ const queryBuilder = (data, id) => {
       });
     }
   }
-  console.log(query)
+  //console.log(query)
   return query;
 };
 const getPagination = (page, size) => {
