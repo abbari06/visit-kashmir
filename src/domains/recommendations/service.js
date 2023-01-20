@@ -16,6 +16,12 @@ class RecommendationService extends dbService {
     super(model);
   }
   async recommendationOnboardingData(body) {
+    if(!body.itineraryForm){
+      const range=new Date(body.query.departureDate)-((new Date(body.query.arrivalDate)));
+      const totalDays=parseInt((range)/(1000 * 60 * 60 * 24))+1;
+      const plans=await PlanService.getPlanByDays(totalDays);
+    body['itineraryForm']=plans[0].itineraryForm;
+    }
     const days = {
       0: "sunday",
       1: "monday",
@@ -44,6 +50,7 @@ class RecommendationService extends dbService {
     );
     let hh = 0;
     let mm = 0;
+    let BaseStayId=0;
     try {
       for (let i of body.itineraryForm) {
         const arrivalDate = new Date(body.query.arrivalDate);
@@ -66,6 +73,8 @@ class RecommendationService extends dbService {
           if (i.stay || stayPlaceId == placeId) {
             stayPlaceId = placeId;
             endSlot = dayEndTime;
+          }else{
+            stayPlaceId=BaseStayId;
           }
           startSlot = visitStartSLot;
           query.startSlotTime = startSlot;
@@ -128,7 +137,7 @@ class RecommendationService extends dbService {
             placeId = i.action;
             endSlot = dayEndTime;
             if (!i.stay) {
-              placeId = i.stayPlaceId;
+              placeId = BaseStayId;
             }
             stayPlaceId = placeId;
             var aTime = i.arrivalTime;

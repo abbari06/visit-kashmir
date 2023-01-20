@@ -36,5 +36,6 @@ const BaseDataEntity = extendSchema(BaseUserSchema, {
     required: true,
   },
   distanceFromAirport: Number,
+  distanceFromSrinagar:Number
 });
 module.exports = { BaseUserSchema, BaseDataEntity };

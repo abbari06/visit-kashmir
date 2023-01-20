@@ -9,7 +9,7 @@ class Plan {
     const planSchema = new mongoose.Schema({
       name: {
         type: String,
-        enum:["3 days plan","5 days plan","7 days plan"],
+        enum:["1 day plan","2 days plan","3 days plan","4 days plan","5 days plan","6 days plan","7 days plan","8 days plan","9 days plan","10 days plan"],
         required: true,
       },
       totalDays:Number,
