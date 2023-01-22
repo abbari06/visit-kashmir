@@ -4,9 +4,7 @@ class PlanService extends dbService {
     super(model);
   }
   async getPlanByDays(value) {
-    console.log(value);
     try {
-      console.log(this.model);
       const plans = await this.model.find({
         $and: [{ totalDays: value }, { deletedFlag: false }],
       })
