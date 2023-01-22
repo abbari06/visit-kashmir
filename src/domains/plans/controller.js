@@ -10,9 +10,7 @@ class PlanController extends MainController {
     this.getPlan = this.getPlan.bind(this);
   }
   async getPlan(req,res){
-    console.log(req.body);
     let plans = await this.service.getPlanByDays(req.body.totalDays);
-    console.log(plans);
     if (plans.error) return res.status(plans.statusCode).send(plans);
     return res.status(201).send(plans);
     
