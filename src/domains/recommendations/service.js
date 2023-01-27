@@ -85,7 +85,9 @@ class RecommendationService extends dbService {
             placeId,
             query
           );
-          allData.push(newDataObjForVisitPlaces);
+          const newObj={};
+          newObj[placeId]=newDataObjForVisitPlaces;
+          allData.push(newObj);
           const day = `${i.day}`;
           if (stayPlaceId > -1 && stayPlaceId != placeId) {
             [hh, mm] = visitEndSlot.split(":").map((x) => parseInt(x));
@@ -97,14 +99,15 @@ class RecommendationService extends dbService {
             if (isSlot) {
               query.startSlotTime = startSlot;
               query.endSlotTime = endSlot;
-              const stayRecommendation = [];
               await this.setCoordinates(stayPlaceId, query);
               let newDataObjForStayPlaces = newDataObj;
               newDataObjForStayPlaces = await this.getRecommendations(
                 stayPlaceId,
                 query
               );
-              allData.push(newDataObjForStayPlaces);
+              const newObj={};
+              newObj[stayPlaceId]=newDataObjForStayPlaces;
+              allData.push(newObj);
             }
           }
           data[day] = allData;
@@ -130,8 +133,10 @@ class RecommendationService extends dbService {
                 query
               );
             }
+            const newObj={};
+              newObj[placeId]=newDataObjForDeparturePlace;
             const day = `${i.day}`;
-            allData.push(newDataObjForDeparturePlace);
+            allData.push(newObj);
             data[day] = allData;
           } else {
             placeId = i.action;
@@ -155,14 +160,15 @@ class RecommendationService extends dbService {
                 placeId,
                 query
               );
-              const day = `${i.day}`;
-              allData.push(newDataObjForArrivalPlace);
-              data[day] = allData;
             }
+            const newObj={};
+            newObj[placeId]=newDataObjForArrivalPlace
+            const day = `${i.day}`;
+              allData.push(newObj);
+              data[day] = allData;
           }
         }
       }
-      //console.log("Response ",data);
       return {
         error: false,
         statusCode: 202,
@@ -214,10 +220,9 @@ class RecommendationService extends dbService {
     const recreationalActivities =
       await RecreationalActivityController.getRecommendation(placeId, query);
 
-    const data = {};
-    data[placeId] = { attractions, foodplaces, events, recreationalActivities };
-
-    return data;
+    // const data = {};
+    // data[placeId] = 
+    return { attractions, foodplaces, events, recreationalActivities };
   }
 
   async saveUserRecommendation(body) {
